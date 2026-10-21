@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.png
+
+# Live session credentials. Anything written by pw_session/login.py, plus the
+# ad-hoc files codegen --save-storage produces. Never commit these.
+auth.json
+_auth.json
+*.state.json
