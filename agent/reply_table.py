@@ -18,13 +18,19 @@ _REPLY_TABLE_FIELDS = (
     "minimum_match_threshold",
 )
 
-# How far the Account holder's approval of this entry's text extends.
+# Whether the Account holder's approval covers this entry's text. Approval only:
+# the sign-off record records approval as a decision taken on a date, so there is
+# nothing between approved and not-approved for this field to carry.
 # `approved` -- the text is signed off and may be posted.
-# `provisional` -- the text is signed off for now, but the entry is named in the
-#   document as still under review; it may be posted, and must be revisited.
 # `escalate` -- no text at all; the entry exists only to route the Intent to a
 #   human, and `approved_phrasings` is empty by design.
-STATUSES = ("approved", "provisional", "escalate")
+#
+# How sure the matcher must be before posting is a different question, with its own
+# answer (`minimum_match_threshold`, tiered by ADR 0019) -- and how far those
+# numbers can be trusted is a third. The document says once, for the whole table,
+# that the numbers are provisional because they are claims about a Router that does
+# not exist in this repository. Neither is approval, so neither is recorded here.
+STATUSES = ("approved", "escalate")
 
 
 @dataclass(frozen=True)

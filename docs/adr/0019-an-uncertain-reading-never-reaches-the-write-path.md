@@ -48,9 +48,18 @@ tiny, **precision is close to free**.
 | tier | entries | threshold | why |
 |---|---|---|---|
 | **Consequential** | `DONATION_ENQUIRY`, `ZAKAT_SEDEKAH_ENQUIRY` | **0.90** | Both post a bank, an account number and a payee. A wrong one is unrecoverable and public: a plea landing here publishes the organisation's bank details to someone asking for welfare help. Together they are **0.3% of rows** — and all of that 0.3% is `DONATION_ENQUIRY`, since `ZAKAT_SEDEKAH_ENQUIRY` was measured at **zero** — so demanding near-certainty forfeits almost no coverage. |
-| **Acknowledgement** | `DOA_BLESSING`, `GREETING`, `PRAISE_ENCOURAGE`, `BENEFICIARY_THANKS`, `CONVERT_CONGRATS` | **0.65** | Every one is written to be safe when wrong — short, warm, claiming no process, no address, no ruling, no promise of action. The error is a slightly off warm sentence, not a wrong fact. This tier is **34.9% of rows** and is the bulk of the work worth doing, so a bar high enough to forfeit it buys safety this tier does not need. 0.65 is "likelier right than wrong, about two to one". |
+| **Acknowledgement** | `DOA_BLESSING`, `DOA_REQUEST`, `GREETING`, `PRAISE_ENCOURAGE`, `BENEFICIARY_THANKS`, `CONVERT_CONGRATS` | **0.65** | Every one is written to be safe when wrong — short, warm, claiming no process, no address, no ruling, no promise of action. The error is a slightly off warm sentence, not a wrong fact. This tier is **34.9% of rows** and is the bulk of the work worth doing, so a bar high enough to forfeit it buys safety this tier does not need. 0.65 is "likelier right than wrong, about two to one". |
 | **Escalation gates** | `HELP_REQUEST`, `JOIN_ENQUIRY` | **0.20** | These hold no text. They raise a human's hand, and their bar is the **help threshold**, set to catch rather than to be precise (ADR 0014, ADR 0016): a false positive costs a human one skim, a false negative posts a membership link under a plea for help. The cost of catching is small — **0.4% of rows**, and the boundary set holds five `HELP_REQUEST`s of which **four do not appear in the random sample at all**, so the true rate is higher than the sample shows. |
 | **Floor** | every entry, any tier | **0.50** | Below this an entry is eligible on a reading the Router itself thinks likelier wrong than right. With 61.1% of the corpus needing silence, that is exactly how a non-sequitur gets posted. No entry may be configured below the floor. |
+
+**`DOA_REQUEST` belongs to the Acknowledgement tier, and an earlier version of this table left it
+out.** The approval record's own Intent table gives its outcome as **Canned reply**, and its four
+rows "promise no action beyond the doa itself" — so a wrong one costs exactly what the rest of the
+tier costs, a slightly off warm sentence with no fact and no address in it, and it cannot be a gate
+because a gate holds no text. The placement is settled by this row. The number it carries is
+provisional like every other, for the reason set out under *These numbers cannot be validated*
+below, and the **34.9%** above measures the classes the corpus pass could count — `DOA_REQUEST` is
+the one the document marks *undercounted*, so the tier is at least that large, not smaller.
 
 Below its threshold, an entry is simply not eligible, so the Comment is unmatched and takes the
 unmatched path: a **Tail Comment escalates** (a reply was warranted and none fits — a gap to

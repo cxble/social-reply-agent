@@ -117,14 +117,27 @@ def test_every_postable_phrasing_leads_with_its_signed_off_text(record_entries, 
             assert row_1 == sign_off, reply_id
 
 
-def test_the_provisional_entry_is_flagged_provisional(record_entries, table_entries) -> None:
-    provisional = {rid for rid, entry in record_entries.items() if entry["status"] == "provisional"}
-    assert provisional == {"tt-doareq-001"}, (
-        "the record's provisional entries changed; the table and the document's sign-off "
-        "state must be reconciled deliberately, not silently"
+def test_approval_is_what_status_carries_and_calibration_is_not_per_entry(
+    record, record_entries, table_entries
+) -> None:
+    """Approval and calibration are different questions, recorded in different places.
+
+    The sign-off record approves text on a date, so an entry's text is approved or
+    there is no text at all to approve. How far a threshold can be trusted is a
+    separate matter, and the document states it once for the whole table rather than
+    entry by entry -- so a per-entry calibration status must not creep back into
+    either file.
+    """
+    for reply_id, entry in table_entries.items():
+        assert entry.status in ('approved', 'escalate'), reply_id
+    for reply_id, recorded in record_entries.items():
+        assert 'threshold_status' not in recorded, (
+            f'{reply_id}: calibration recorded per entry as well as for the table'
+        )
+    assert record['threshold_status'] == 'provisional', (
+        'the record no longer carries the document\'s statement that the numbers are '
+        'provisional; if the Router now exists, fix this deliberately'
     )
-    for reply_id in provisional:
-        assert table_entries[reply_id].status == "provisional"
 
 
 def test_escalation_only_entries_carry_no_postable_text(record_entries, table_entries) -> None:

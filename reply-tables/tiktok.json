@@ -144,7 +144,7 @@
     "reply_id": "tt-doareq-001",
     "language": "ms",
     "intent": "DOA_REQUEST",
-    "status": "provisional",
+    "status": "approved",
     "approved_phrasings": [
       "Aamiin, semoga Allah makbulkan hajat tuan/puan.",
       "Aamiin. Moga Allah makbulkan hajat tuan/puan.",
