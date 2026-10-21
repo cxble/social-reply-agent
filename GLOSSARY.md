@@ -77,12 +77,33 @@ The step that rewrites a Comment's text into a canonical form for matching, leav
 _Avoid_: cleaning, preprocessing, canonicalisation, stemming
 
 **Tail**:
-A Comment that no Canned reply covers, and which therefore needs one written for it.
+A Comment no Canned reply covers but which a Reply was warranted for — the coverage gap, and where
+the next entry comes from. The reply table spells its Intent `OUT_OF_SCOPE`.
 _Avoid_: miscellaneous comment, edge case, fallback
 
+**No-reply Comment**:
+A Comment the organisation correctly does not answer, because it presents nothing addressed to the
+organisation — a bare formula, an emoji or sticker, a mention, a support tag, chatter between
+commenters. A No-reply Comment and a Tail Comment both go unanswered, and they are opposites in the
+only way that matters: one is the design working and the other is a gap in it.
+_Avoid_: junk, noise, unanswered comment, skipped comment
+
 **Router**:
-The step that assigns each Comment either a Canned reply or the Tail.
+The step that assigns each Comment one of four outcomes: a Canned reply, an Escalation, the Tail, or
+No reply.
 _Avoid_: classifier, matcher
+
+**Entry threshold**:
+The confidence below which a Canned reply is not eligible for a Comment (`minimum_match_threshold`).
+It is per entry and tiered by what a wrong Reply costs. Below its threshold the Comment is unmatched
+and takes the unmatched path; the entry is not eligible at any lower confidence.
+_Avoid_: cutoff, score, minimum match
+
+**Help threshold**:
+The much lower bar at which evidence of a person in difficulty, plus any kind of ask, raises a
+human's hand. It gates Escalation and never posting, and it is deliberately set to catch rather than
+to be precise.
+_Avoid_: escalation threshold, safety threshold
 
 **Evaluator**:
 A check a written Reply must pass before it is posted.

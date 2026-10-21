@@ -74,13 +74,29 @@ acknowledgements; the useful work is in the minority, and the minority is where 
 | `CONVERT_CONGRATS` | a blessing aimed at a new Muslim | 2 matched, on a Post carrying 180 Comments | Canned reply |
 | `DONATION_ENQUIRY` | asking how to contribute | 1 | Canned reply — approved 2026-10-21 |
 | `ZAKAT_SEDEKAH_ENQUIRY` | asking about zakat, sedekah or infaq by name | **0 real** | Canned reply — same text as donation |
-| `OUT_OF_SCOPE` | **bare formulae, no text at all**, emoji-only, spam | **516 — 36%** | no reply |
+| `OUT_OF_SCOPE` | **a reply was warranted and no entry fits** — condolence, complaint, testimony | **14 — 1.8%** by reading; the keyword pass's 516 were mostly `NO_REPLY` | no reply — **Escalated** (ADR 0018) |
 
 The counts are a crude keyword pass, not the Router, and are given to show shape rather than to
 be trusted per-Intent. Two of them are known to be wrong in instructive ways, below.
 
-**`OUT_OF_SCOPE` is the largest Intent in the table and it is not a dustbin.** 516 Comments —
-36% of the corpus — carry nothing to match on:
+**Every count in this table is a keyword estimate and every one of them is now superseded.**
+`docs/labelled-set-tiktok.md` labels 564 distinct Comments by hand and gives the real rates:
+`OUT_OF_SCOPE` collapses to 1.8%, `DOA_BLESSING` to 17.7%, and 61.1% of rows turn out to need no
+reply at all. Read the numbers below as the shape the keyword pass saw; read the labelled set for
+what the corpus means.
+
+**`OUT_OF_SCOPE` was the table's largest line, and the name was doing two jobs.** 516 Comments —
+36% of the corpus — carry nothing to match on, which is a fact about the keyword pass and not about
+the corpus:
+
+**Those 516 are two classes, and the labelled set split them — settled in ADR 0018.** Most are
+*correctly silent*: the design working, not a hole in coverage. `docs/labelled-set-tiktok.md` calls
+that **`NO_REPLY`** and measures it at **61.1% of rows**. `OUT_OF_SCOPE` proper — **a reply was
+warranted and no entry fits**: condolence, testimony, complaint — is **1.8%**. The rest of this
+section is about the `NO_REPLY` class. Both go unanswered, and they are opposites in the only way
+that matters: a `NO_REPLY` Comment receives nothing at all and is **never Escalated**, while a Tail
+Comment is Escalated, because 61.1% of a corpus routed to a human is how the Escalation sink stops
+being read (ADR 0014's own warning). The old name is why the 36% below should not be read as a gap.
 
 - **231 (16%) are a bare religious formula and nothing else**: `alhamdulillah` alone 114 times,
   `alhamdulilah` 20, `aamiin` 28, `syukur alhamdulillah` 8, `alhamdulillah aamiin` 8,
@@ -477,7 +493,8 @@ also the answer a correct match would have produced.
   and it carries the same `tolong` that four `DOA_REQUEST` Comments carry and that the real help
   requests carry. The word is not the signal; what follows it is — an account number is asked for,
   not assistance.
-- `minimum_match_threshold`: to be calibrated
+- `minimum_match_threshold`: **0.90** — the consequential tier (ADR 0019). The highest in the
+  table, because this is the entry that publishes a bank, an account number and a payee
 - **The account holder name in the reply matches the organisation in the bio**, which is the
   consistency check that this is the organisation's own account and not a third party's.
 - **The reply text is fixed.** The account number, the bank, and the payee are approved facts,
@@ -686,6 +703,14 @@ reply may be posted. A second, deliberately much lower **help threshold** decide
 human is needed. They are different questions and collapsing them into one number is the mistake
 this section exists to prevent.
 
+**The entry thresholds are now set and tiered by what a wrong Reply costs — ADR 0019.** The rule,
+and the defaults it produces, are: **0.90** for the two entries that publish a bank account
+(`DONATION_ENQUIRY`, `ZAKAT_SEDEKAH_ENQUIRY`), **0.65** for the acknowledgement classes, **0.20**
+for the help threshold, and a **0.50 floor** no entry may sit below. The heights are justified by
+the measured size of each class rather than by caution: the money-moving Intents are **0.3% of
+rows**, so demanding near-certainty there costs almost no coverage, while the acknowledgement tier
+is **34.9%** and is the bulk of the work worth doing.
+
 The asymmetry is the whole argument, and it is the same one ADR 0014 makes:
 
 - A **false positive** — escalating a Comment that was really routine — costs a human one skim.
@@ -698,15 +723,17 @@ difficulty plus any kind of ask routes to a human, at any confidence.**
 
 | Situation | Outcome |
 |---|---|
+| **The Comment presents nothing addressed to the organisation** — a bare formula, an emoji, a mention, a support tag, chatter between commenters | **No reply** — nothing posted and nothing Escalated (ADR 0018) |
 | One Intent matches above threshold; no difficulty signal | Canned reply |
 | **Any difficulty signal** (own or a named third party's) **plus an ask**, even at low confidence | **Escalate** |
 | Two mutually exclusive Intents both match above threshold | **Escalate** — never pick the higher |
 | `nak mohon` with nothing else to disambiguate it | **Escalate** |
 | Tense/direction unclear: thanks for help, or a plea for help | **Escalate** |
 | Language or script not confidently read | **Escalate** |
-| No Intent matches; no difficulty signal | Tail reply, or nothing |
+| No Intent matches; no difficulty signal | **Tail Comment** — a reply was warranted and none fits, so **Escalate**; nothing at all if the Comment presented nothing |
 | Tail would need a fact the Account holder has not approved | **Escalate** |
 | The Post is a welfare-ziarah Post and the Comment is not confidently routine | **Escalate** |
+| The Comment's identifier cannot be read immediately before writing | **Escalate** — never matched on its text (ADR 0019) |
 
 **Escalate is a real outcome with a real cost, so it must not be a dumping ground.** Every row
 above routes to a human, and ADR 0014 already records that the Escalation sink has to be
@@ -916,15 +943,28 @@ claim either way.
    `dimakbulkan` are idiomatic rather than mechanical. A Malay speaker should read the eight sets
    in § Phrasings at some point; editing a row afterwards is ordinary maintenance, not a
    re-opening of the decision. Nothing is blocked on it.
-2. **Calibrate `minimum_match_threshold` — and note that this corpus cannot do it.** The harvest is
-   unlabelled: it records what people wrote, not which Intent each Comment *is*. A keyword pass can
-   measure its own precision (4 real of 41 for `HELP_REQUEST`, 0 of 4 for `ZAKAT_SEDEKAH_ENQUIRY`)
-   but it produces no confidence scores, so it cannot place a threshold on Jev's decisions. What
-   calibration needs is Comments **hand-labelled with their correct Intent**, including the boundary
-   cases this document spends its length on — the `tolong doa` family, `nak mohon`,
-   `semoga cepat sembuh`, and the bare formulae. Labelling a few hundred of the 1,423 against the
-   Intent set is the concrete next step, and it doubles as the test of whether the Intent set is
-   the right one.
+2. **The hand-labelled set is built, 2026-10-21 — see `docs/labelled-set-tiktok.md`.** **564 distinct
+   Comments** were labelled (drawn as 692 candidates in two sets — `random`, 401, for base rates;
+   `boundary`, 291, exhaustive over the contested families). All 128 Comments drawn into both sets
+   were labelled twice, in two passes, and **agree**. It answers the second half of what this item
+   asked — the Intent set's vocabulary held up, with two exceptions it could not name (condolence
+   for the deceased, and the "states disability without asking" family, which is where the two
+   `UNCERTAIN` rows went) and comments not in Malay at all. `tools/score_threshold.py` sweeps
+   `minimum_match_threshold` against it and reports false replies on silence separately from
+   precision. **The threshold itself is now decided — ADR 0019** — but as a *rule* rather than a
+   calibrated number: per entry, tiered by what a wrong Reply costs (0.90 / 0.65 / 0.20) with a
+   0.50 floor, below its threshold a Comment taking the unmatched path rather than a cheaper
+   answer. Those numbers are provisional, because they are claims about Jev's per-Comment
+   confidences and the Router does not exist in this repository; the sweep's current output comes
+   from `--stub` and is marked SYNTHETIC on every run. The labelled set is what they will be
+   re-derived against.
+   - **The no-reply policy is settled — ADR 0018.** What this table called `OUT_OF_SCOPE` at 36%
+     was two classes: **`NO_REPLY`**, correctly silent and **61.1% of rows**, and `OUT_OF_SCOPE`
+     proper, a genuine coverage gap at **1.8%**. The label was renamed from `TAIL` because the
+     glossary's **Tail** is the gap — the opposite — and `NO_REPLY` now receives nothing at all and
+     is never Escalated, while a Tail Comment is Escalated. § Safe fallbacks and § Intents are
+     updated; `tools/apply_labels.py` and `tools/score_threshold.py` carry the new vocabulary, and
+     the harness no longer counts `OUT_OF_SCOPE` as a Comment that should get a Canned reply.
 3. **The read gap is understood; the truncation is no longer a mystery.** `total` counts top-level
    Comments **plus their replies** and nothing else — proven by exact arithmetic on six small Posts
    (13+13=26, 3+3=6, 7+9=16, 4+4=8, 6+4=10, 30+30=62) — with `has_filtered_comments: 0` and no
