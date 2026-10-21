@@ -73,6 +73,61 @@ handle plus body text and then re-reads the React props to confirm the `cid` mat
 acting. Identity and addressability are separate problems here, and only one of them is
 solved by having the id.
 
+**Correction, 2026-10-21, from the living DOM.** An earlier revision of this section claimed
+`[data-e2e^="comment-level"]` as the way to find Comment nodes. On the live page that selector
+matches nothing — `comment-level: 0` — while `[class*="DivCommentItem"]` matches every
+Comment. The `data-e2e` parts named above (`comment-level-1`, `comment-username-1`,
+`comment-reply-1`) are real and still appear **inside** a Comment once one is found; they were
+never the right thing to find Comments *by*. A probe built on the suffix selector reads zero
+nodes on a page with hundreds of Comments and reports it as an empty comment section. The
+working selector is `[class*="DivCommentItem"]`, and the class-name caveats below still apply.
+
+**Also from the living DOM: TikTok renders Comments only in a headed browser.** Headless
+Chromium gets the panel and the counters but every row as a skeleton placeholder, so the
+Comment selector matches nothing no matter how correct it is. Reading Comments logged out in a
+headed browser works fine — a Session is needed to post, not to read.
+
+**Correction, 2026-10-21: the identifier is in the page's own request, not in React props.**
+The React-props path above did not produce a `cid` on the current build — a headed harvest of
+228 Comments returned `cid: null` on every one. The `cid` is not missing; it was looked for in
+the wrong place. TikTok's web client fetches Comments over XHR from its own endpoint, visible
+to anything that observes the page's network traffic:
+
+```
+https://www.tiktok.com/api/comment/list/?…&aweme_id=7646191853557140744&…
+```
+
+The JSON response carries, per Comment, `cid`, `create_time`, `reply_id`, `reply_comment_total`
+and the full `user` object — the same fields the React-props path was expected to yield — plus
+three fields the DOM read cannot produce at all:
+
+| field | what it gives |
+|---|---|
+| `cid` | the per-Comment identifier the Replied set keys on |
+| `cursor` | where the next page starts |
+| `has_more` | whether there is a next page |
+| `total` | how many Comments the Post actually has |
+
+**The `total` field is the find that matters most, because it falsifies this project's corpus.**
+One Post reported `total: 569` while the DOM read returned 20 — a harvest that had read the
+first page and reported it as the section. `has_more` and `cursor` were present and ignored
+throughout.
+
+**Pagination is also reachable, but it stops short of the total.** Driving the comment panel's
+own scroll container to its end loads the next page — 20 → 40 → 60 → 77 → **78** on the Post
+measured, with the API cursor advancing `0, 20, 40, 60, 80`, and `scrollIntoView` on the last
+item doing nothing at all. Past cursor 80 the response comes back with no comments and
+`has_more: 0`, and the read ends at 78 against a reported 569. **That gap is unresolved**: it
+may be that `total` counts replies that need a separate request, or that a logged-out session
+sees a capped subset. It is the next thing to establish, because a corpus that is 14% of a
+section is a different artifact from one that is 100%, and the difference changes what the
+Variant lists can claim.
+
+**This does not make the read an official-API integration.** The browser makes the request as
+part of rendering the page; observing it is still browser automation, which is what ADR 0001
+requires. Replaying a cursor by hand — calling the endpoint directly with our own parameters —
+would not be, and is the line to hold. The distinction is who initiates the request.
+
 Class names rotate on deploy, and TikTok has changed its naming scheme (a `-7937d88b--` build
 segment is new), so only the semantic middle token survives:
 
@@ -136,7 +191,7 @@ The key is per-Platform, because the Platforms do not agree on what a Comment is
 | Platform | Key | Available |
 |---|---|---|
 | Instagram | `ig:{shortcode}:{commentId}` | Always, from the permalink |
-| TikTok | `tt:{awemeId}:{cid}` | Always, from React props |
+| TikTok | `tt:{awemeId}:{cid}` | Always, from the page's own comment-list response |
 | Facebook | `fb:{commentId}` | Often, from the timestamp anchor |
 
 Three things follow.
