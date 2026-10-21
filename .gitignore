@@ -8,3 +8,10 @@ __pycache__/
 auth.json
 _auth.json
 *.state.json
+
+# Harvested Comments and anything derived from them. This repo is public: the
+# text is public on the Platform, but an archive of it paired with handles, or
+# carrying per-person labels like HELP_REQUEST, is a different artifact and is
+# not published from here. The scripts that read it are committed; the data is
+# not. See tools/prepare_corpus.py.
+data/

@@ -8,7 +8,10 @@ How a Comment becomes a Reply. Spec material, kept here so it does not live only
 2. **Normalize.** Recognise known Variants, meaning abbreviations, slang and misspellings, into a canonical form for matching. Normalization never alters the Comment as stored, and never replaces substrings in a way that could change meaning.
 3. **Detect language.** Classify as Malay, English, mixed, or uncertain. A mixed or uncertain Comment is not forced into a class.
 4. **Route.** Jev matches the Normalized Comment against the Canned replies eligible for that language and Intent.
-5. **Evaluate.** Accept the Canned reply, send an unmatched Comment to the Tail, or Escalate.
+5. **Evaluate.** Accept the Canned reply, send an unmatched Comment to the Tail, Escalate, or leave the Comment unanswered. Four outcomes, and the last is the common one.
+6. **Confirm, at the moment of writing.** Immediately before submitting, the Adapter re-reads the Comment's identifier on the page and requires it to equal the identifier held. A Comment whose identifier cannot be read is skipped and Escalated, never matched on its text.
+
+Steps 1–5 decide *what to say*. Step 6 is about *which Comment*, and it is a bar of its own: a perfect classification posted under the wrong Comment is a public double Reply. ADR 0019 holds all four bars a Comment must clear.
 
 ## Reply table schema
 
@@ -20,7 +23,7 @@ How a Comment becomes a Reply. Spec material, kept here so it does not live only
 | `approved_phrasings` | the exact texts Jev is allowed to select, one of which rotation picks. Earlier documents spell the singular `approved_reply`, which is the first Phrasing — the entry's canonical text |
 | `matching_criteria` | what Jev matches a Comment against |
 | `known_variants` | validated Variants only |
-| `minimum_match_threshold` | the confidence below which this entry is not eligible |
+| `minimum_match_threshold` | the confidence below which this entry is not eligible. Per-entry, tiered by what a wrong Reply costs, and never below the floor of 0.50 (ADR 0019) |
 
 The table is version-controlled in git. Jev selects from it and never writes new text.
 
@@ -28,18 +31,51 @@ The table is version-controlled in git. Jev selects from it and never writes new
 
 Temperature is not a matching signal. Jev exposes no temperature parameter and returns the same calibrated answer for the same state and questions, so the Router has no randomness to tune. Where a hosted model writes Tail text, its temperature governs writing and must never be read as a match.
 
-Thresholds are per-entry, configurable, and calibrated against real Comments rather than guessed.
+Thresholds are per-entry, configurable, and calibrated against real Comments rather than guessed —
+the ground truth is `docs/labelled-set-tiktok.md` and the sweep is `tools/score_threshold.py`.
+
+**They are tiered by what a wrong Reply costs, not by how good the Router is** (ADR 0019). One
+global number would either forfeit the acknowledgement classes that are 34.9% of the corpus or
+expose the entries that can move money.
+
+| tier | entries | threshold | default |
+|---|---|---|---|
+| Consequential | `DONATION_ENQUIRY`, `ZAKAT_SEDEKAH_ENQUIRY` | near-certainty | **0.90** |
+| Acknowledgement | `DOA_BLESSING`, `GREETING`, `PRAISE_ENCOURAGE`, `BENEFICIARY_THANKS`, `CONVERT_CONGRATS` | two to one | **0.65** |
+| Escalation gates | `HELP_REQUEST`, `JOIN_ENQUIRY` — no text; this is the **help threshold** | catch, not precise | **0.20** |
+
+**No entry may sit below 0.50.** Below that an entry is eligible on a reading the Router itself
+thinks likelier wrong than right, and with 61.1% of the corpus needing no reply that is how a
+non-sequitur gets posted. Below its threshold an entry is simply not eligible, so the Comment is
+unmatched and takes the unmatched path.
+
+**A threshold is not the whole gate.** ADR 0019's other bars — the Comment is not a No-reply
+Comment, the Router is not uncertain and not in conflict, and the identifier is confirmed at write
+time — are outside the sweep and cannot be tuned by moving a number. The defaults above are
+provisional until the sweep runs against Jev's own confidences rather than the stub's.
 
 ## Fallback
 
+**Four outcomes, not three** (ADR 0018): a Canned reply, an Escalation, a Tail Comment, and
+**nothing at all**. The fourth is the largest class in the corpus by a wide margin, and it is an
+outcome rather than a failure to match.
+
 | Situation | Outcome |
 |---|---|
-| Known Variant, clear Intent, above threshold | the Canned reply |
-| Language known, Intent unmatched | the Tail |
+| The Comment presents nothing addressed to the organisation — a bare formula, an emoji, a mention, a support tag, chatter between commenters | **No reply.** Nothing posted, and nothing Escalated |
+| Known Variant, clear Intent, above its threshold | the Canned reply |
+| Language known, Intent unmatched | the Tail — nothing posted, and **Escalated** as a gap to close |
 | Language uncertain, or meaning ambiguous | Escalation |
+| Two mutually exclusive Intents both above threshold | **Escalation** — never pick the higher |
+| Any evidence of a person in difficulty plus any kind of ask, at any confidence | **Escalation** |
+| The Comment's identifier cannot be read immediately before writing | **Escalation** — never matched on its text |
 | Tail fails, or returns low confidence | Escalation |
 
-A Reply is never invented to fill a gap.
+A Reply is never invented to fill a gap, and **silence is never how an ambiguity is resolved**. The
+No-reply row is not an escape hatch for a Comment the Router found hard: the test there is whether
+the Comment presents anything addressed to the organisation, not whether an entry matched it. A
+Comment with nothing to answer gets nothing at any confidence. A Comment that asked something and
+was not understood is Escalated, however low the confidence.
 
 ### The help threshold
 
@@ -47,9 +83,10 @@ The `minimum_match_threshold` on an entry answers one question: *may a Canned re
 for this Comment?* It is not the same question as *does a person need a human?*, and the two
 must not share a number.
 
-A second, deliberately lower **help threshold** answers the second question. Any evidence of a
-person in difficulty — their own, or a named third party's — together with any kind of ask is
-above it, at any confidence, and routes to Escalation regardless of how well some entry matched.
+A second, deliberately lower **help threshold** answers the second question — **0.20** by default
+(ADR 0019). Any evidence of a person in difficulty — their own, or a named third party's — together
+with any kind of ask is above it, at any confidence, and routes to Escalation regardless of how well
+some entry matched.
 
 The asymmetry is the reason. A false positive costs a human one skim. A false negative posts a
 canned membership link under a plea for help, in public, from an organisation whose purpose is
