@@ -11,6 +11,14 @@ automation because official platform APIs are out of scope.
 A piece of content the user published on a Platform.
 _Avoid_: video, upload, content
 
+**Discovery window**:
+The recency boundary that decides which Posts a Comment pass may notice for the first time. It bounds discovery rather than coverage: a Post is noticed while it is inside the window, and a Post never noticed while young is never noticed at all.
+_Avoid_: lookback, scan range, freshness window
+
+**Tracked post**:
+A Post the agent has noticed and keeps watching, which stays tracked after it ages out of the Discovery window so that later Comments on it are still seen. Tracking ends when its eligible Backlog is resolved or the Post is closed.
+_Avoid_: monitored post, watched post, target, record
+
 **Comment**:
 Text someone else left on a Post.
 _Avoid_: reply, response, message
@@ -45,9 +53,20 @@ _Avoid_: rules, templates, macros, playbook
 One entry in the Reply table. Text written and approved in advance.
 _Avoid_: template, macro, script
 
+**Phrasing**:
+One of the approved texts a single Canned reply may post. Every Phrasing of a Canned reply states the same facts; they differ only in wording. Which one is posted rotates, so the same text does not repeat.
+_Avoid_: variant, alternative, version, wording
+
+**Phrasing set**:
+The Phrasings that rotate together. Rotation is per set rather than per entry, so two entries naming the same set — as the donation and zakat entries do — share one rotation and cannot post the same text back to back on one Post.
+_Avoid_: deck, pool, rotation group
+
 **Variant**:
 An observed spelling, abbreviation or slang form that a Canned reply treats as matching it. Variants are added only from real Comments, never guessed.
 _Avoid_: alias, synonym, typo, fuzz
+
+A Variant is how a Comment is **spelled**; a Phrasing is how a Reply is **written**. They sit at
+opposite ends of the pipeline and are never the same kind of thing.
 
 **Intent**:
 The kind of situation a Comment presents, which decides which Canned replies are eligible for it.
@@ -83,6 +102,14 @@ _Avoid_: handoff, deferral, review queue
 One sweep over a Platform's Posts, looking for Comments that have not been answered.
 _Avoid_: poll, cycle, scan, run
 
+**Active window**:
+The stretch of each local day during which a Platform agent may start work. Nothing new begins outside it, so the agent's activity matches the Account's waking hours instead of running around the clock.
+_Avoid_: schedule, hours, uptime, business hours
+
+**Backlog**:
+Eligible Comments that have been discovered and are waiting for a Reply, including those that arrived while the agent was outside its Active window. It is not the Baseline: a Baseline Comment is never eligible, and a Backlog Comment is waiting.
+_Avoid_: queue, todo, pending, worklist
+
 **Platform agent**:
 The long-running agent that drives one Platform. There is one per Platform.
 _Avoid_: bot, worker, driver
@@ -104,8 +131,12 @@ The point at which a Platform agent leaves Dry run and starts posting. It is ear
 _Avoid_: promotion, go-live, activation
 
 **Daily cap**:
-The maximum number of Replies one Platform agent may post in a day. The count survives a restart, so restarting the agent cannot buy more Replies.
+The maximum number of Replies one Platform agent may post in a day. The count survives a restart, so restarting the agent cannot buy more Replies. It bounds the total, not the rate.
 _Avoid_: rate limit, throttle, budget
+
+**Pacing**:
+The enforced spacing between Replies, so that a Platform agent's activity presents as a person working through Comments rather than a machine emptying a queue. It is separate from the Daily cap: the cap bounds how many Replies a day, and Pacing bounds how fast they arrive.
+_Avoid_: delay, interval, sleep, jitter
 
 **Kill switch**:
 The single control whose presence stops all posting, on every Platform.
@@ -140,6 +171,10 @@ _Avoid_: handled flag, done, answered
 **Session**:
 The logged-in browser state for one Account. It is the credential, because there is no token.
 _Avoid_: login, cookies, auth
+
+**Flag**:
+A Platform's judgement that an Account is automated, and the restrictions it places in response. Pacing and the Daily cap exist to avoid it. It is not the same failure as a dead Session: an Account can be flagged while its Session is perfectly alive, and an agent that only checks whether pages still load will miss it.
+_Avoid_: ban, block, strike, suspension
 
 **Selector rot**:
 A locator that still matches an element, but now the wrong one.
