@@ -21,7 +21,6 @@
         143
       ],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan.",
@@ -245,7 +244,6 @@
       "matching_criteria_source": "derived",
       "matching_criteria_doc_lines": [],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Aamiin. Thank you for your doa.",
@@ -366,7 +364,6 @@
         218
       ],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Terima kasih. Semoga Allah membalas budi baik tuan/puan.",
@@ -563,7 +560,6 @@
         242
       ],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Waalaikumussalam warahmatullahi wabarakatuh.",
@@ -779,7 +775,7 @@
       "reply_id": "tt-doareq-001",
       "intent": "DOA_REQUEST",
       "language": "ms",
-      "status": "provisional",
+      "status": "approved",
       "doc_lines": [
         277,
         323
@@ -790,7 +786,6 @@
         280
       ],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "provisional",
       "approved_phrasings": [
         {
           "text": "Aamiin, semoga Allah makbulkan hajat tuan/puan.",
@@ -939,7 +934,6 @@
         327
       ],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Alhamdulillah. Terima kasih kembali.",
@@ -1113,7 +1107,6 @@
       "matching_criteria_source": "derived",
       "matching_criteria_doc_lines": [],
       "minimum_match_threshold": 0.65,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Alhamdulillah. Semoga Allah kekalkan tuan/puan dalam hidayah-Nya.",
@@ -1203,7 +1196,6 @@
       "matching_criteria_source": "derived",
       "matching_criteria_doc_lines": [],
       "minimum_match_threshold": 0.2,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [],
       "known_variants": [
         {
@@ -1283,7 +1275,6 @@
         485
       ],
       "minimum_match_threshold": 0.9,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
@@ -1372,7 +1363,6 @@
         527
       ],
       "minimum_match_threshold": 0.9,
-      "threshold_status": "uncalibrated",
       "approved_phrasings": [
         {
           "text": "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
@@ -1432,5 +1422,10 @@
       ],
       "sign_off_is_reference": true
     }
-  ]
+  ],
+  "threshold_status": "provisional",
+  "threshold_status_doc_lines": [
+    961
+  ],
+  "threshold_status_note": "The document states the numbers' uncertainty once, for the whole table, not per entry: 'Those numbers are provisional, because they are claims about Jev's per-Comment confidences and the Router does not exist in this repository.' There is therefore no per-entry calibration status, and the production table carries none."
 }
