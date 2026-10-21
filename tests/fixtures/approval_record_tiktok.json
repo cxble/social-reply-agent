@@ -1,0 +1,1436 @@
+{
+  "note": "Reviewed representation of docs/reply-table-tiktok.md for transcription fidelity tests. Derived from the document only, never from reply-tables/tiktok.json. Every string carries the document lines it came from.",
+  "source_document": "docs/reply-table-tiktok.md",
+  "intents_with_no_text": [
+    "HELP_REQUEST",
+    "JOIN_ENQUIRY"
+  ],
+  "entries": [
+    {
+      "reply_id": "tt-doa-001",
+      "intent": "DOA_BLESSING",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        140,
+        179
+      ],
+      "matching_criteria": "a prayer or blessing with no request in it",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        143
+      ],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan.",
+          "doc_lines": [
+            834
+          ]
+        },
+        {
+          "text": "Aamiin. Terima kasih atas doanya, semoga Allah permudahkan urusan tuan/puan.",
+          "doc_lines": [
+            835
+          ]
+        },
+        {
+          "text": "Aamiin ya Allah. Moga segala urusan tuan/puan dipermudahkan.",
+          "doc_lines": [
+            836
+          ]
+        },
+        {
+          "text": "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan, dunia dan akhirat.",
+          "doc_lines": [
+            837
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "semoga cepat sembuh",
+          "doc_lines": [
+            147
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga cpt sembuh kami semua doa aamiin",
+          "doc_lines": [
+            147
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga cepat sembuh insyaallah aamiin",
+          "doc_lines": [
+            148
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga cepat sembuh aameen²",
+          "doc_lines": [
+            148
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "smg cepat sembuh ibu dan ayah nya smg allah sembuhkan segala penyakit nya dan sehat selalu",
+          "doc_lines": [
+            149
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga dipermudahkan",
+          "doc_lines": [
+            151
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga di permudahkan segala urusan",
+          "doc_lines": [
+            151
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga dipermudahkan segala urusan",
+          "doc_lines": [
+            151
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "aamiin ya allah",
+          "doc_lines": [
+            152
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga allah permudahkan urusan",
+          "doc_lines": [
+            152
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah utk saudara baru moga Allah memberi cahaya kepada hambanya aminnn3 yralamin",
+          "doc_lines": [
+            153
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Alhandullillah. Semoga Allah melimpahi rahmat keatas Gary.",
+          "doc_lines": [
+            154
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulllah semuga dipermudahkan segala urusan",
+          "doc_lines": [
+            155
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Moga dipemudahkan urusan gary n bro ben",
+          "doc_lines": [
+            156
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semoga Allah melimpahkan rahmat kepada anda dan gary",
+          "doc_lines": [
+            157
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semuga dpermudahkan",
+          "doc_lines": [
+            158
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "dipermudahkan urusan",
+          "doc_lines": [
+            158
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semuga allah mudahkan urusan hashimah",
+          "doc_lines": [
+            158
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semuga dmurahkan rezeki hasimah untuk menjaga ibu bapa",
+          "doc_lines": [
+            159
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "smuga diprmudahkn allah sgl urusan mreka",
+          "doc_lines": [
+            159
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "ya allah dipermudahkan segala urusan dan diberi kesihatan yang baik",
+          "doc_lines": [
+            160
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "semugo allahpermudah segala usannya",
+          "doc_lines": [
+            161
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Semoga urusan pakcik ni dipermudahkan Allah Swt...",
+          "doc_lines": [
+            161
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [
+        {
+          "text": "aamiin",
+          "reason": "bare_formula_is_no_reply_adr_0018",
+          "doc_lines": [
+            146
+          ]
+        },
+        {
+          "text": "alhamdulillah aamiin",
+          "reason": "bare_formula_is_no_reply_adr_0018",
+          "doc_lines": [
+            150
+          ]
+        }
+      ],
+      "sign_off_text": "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan.",
+      "sign_off_doc_lines": [
+        786
+      ]
+    },
+    {
+      "reply_id": "tt-doa-002",
+      "intent": "DOA_BLESSING",
+      "language": "en",
+      "status": "approved",
+      "doc_lines": [
+        180,
+        214
+      ],
+      "matching_criteria": "a prayer or blessing written in English or mixed English-Malay, with no request in it",
+      "matching_criteria_source": "derived",
+      "matching_criteria_doc_lines": [],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Aamiin. Thank you for your doa.",
+          "doc_lines": [
+            843
+          ]
+        },
+        {
+          "text": "Aamiin. Thank you for the doa, we really appreciate it.",
+          "doc_lines": [
+            844
+          ]
+        },
+        {
+          "text": "Aamiin. Jazakallahu khairan for your doa.",
+          "doc_lines": [
+            845
+          ]
+        },
+        {
+          "text": "Aamiin. Thank you, and may Allah make things easy for you too.",
+          "doc_lines": [
+            846
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "Alhamdulillah, Bro Ben ,all the praise to our Almighty Alloh. keep it up till ur last breath. Aamieen.",
+          "doc_lines": [
+            187
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaik bro Ben. Keep it up till it last breath. Amieen Ya Alloh.",
+          "doc_lines": [
+            188
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Bro Ben. With your good and kind hearted, may Allah bless you bro Ben.",
+          "doc_lines": [
+            189
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "to be honestly you are the best. Tkasih ya Allah Aamiinn.",
+          "doc_lines": [
+            190
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "i appreciate what you are doing..ben. i.pray for yr good health..aamiin",
+          "doc_lines": [
+            191
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Jazakallah Khairan Kathira semoga Allah permudahkan segala urusan dunia dan akhiratnya pada saudara 2saudari 2 semua amin ya Allah amin ya Rabbal Alam",
+          "doc_lines": [
+            192
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "good job. semuga dipermudahkan segala urusan Perubatan Dan kembali sihat",
+          "doc_lines": [
+            193
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terima kasih sahabat dengan perhatian sahabat thanks for your kindness semoga di permudahkan segala urusan dan...",
+          "doc_lines": [
+            194
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [
+        {
+          "text": "Walakomsalam from Myanmar 🇲🇲 Allah bless you",
+          "reason": "documented_not_this_intent",
+          "doc_lines": [
+            209
+          ]
+        },
+        {
+          "text": "you reply me",
+          "reason": "documented_not_this_intent",
+          "doc_lines": [
+            210
+          ]
+        }
+      ],
+      "sign_off_text": "Aamiin. Thank you for your doa.",
+      "sign_off_doc_lines": [
+        787
+      ]
+    },
+    {
+      "reply_id": "tt-praise-001",
+      "intent": "PRAISE_ENCOURAGE",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        215,
+        238
+      ],
+      "matching_criteria": "praise or encouragement with no request and no explicit doa",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        218
+      ],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Terima kasih. Semoga Allah membalas budi baik tuan/puan.",
+          "doc_lines": [
+            852
+          ]
+        },
+        {
+          "text": "Terima kasih banyak. Semoga Allah membalas kebaikan tuan/puan.",
+          "doc_lines": [
+            853
+          ]
+        },
+        {
+          "text": "Terima kasih atas sokongan. Moga Allah balas jasa baik tuan/puan.",
+          "doc_lines": [
+            854
+          ]
+        },
+        {
+          "text": "Terima kasih. Semoga Allah membalas budi baik tuan/puan dengan yang lebih baik.",
+          "doc_lines": [
+            855
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "terbaik",
+          "doc_lines": [
+            220
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaikk",
+          "doc_lines": [
+            220
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaik bro ben",
+          "doc_lines": [
+            220
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "abg terbaikk",
+          "doc_lines": [
+            221
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "tuann terbaik",
+          "doc_lines": [
+            221
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaik adik",
+          "doc_lines": [
+            221
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaik bro bo",
+          "doc_lines": [
+            221
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaik sahabat rezeki tu",
+          "doc_lines": [
+            221
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "mantap",
+          "doc_lines": [
+            222
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah terbaik",
+          "doc_lines": [
+            223
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamduliillah terbaik bro ben",
+          "doc_lines": [
+            223
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah bro ben terbaik",
+          "doc_lines": [
+            223
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah terbaik saudara islam ku terus istiqamah",
+          "doc_lines": [
+            224
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "kerja yang mulia teruskan perjuangan anda",
+          "doc_lines": [
+            225
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "teruskan ben",
+          "doc_lines": [
+            226
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "hebat perjalanan hidup tuan",
+          "doc_lines": [
+            226
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "good job semuga dipermudahkan segala urusan perubatan dan kembali sihat",
+          "doc_lines": [
+            227
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "subhanallah dpt ibadat dlm raudah yang terbaik",
+          "doc_lines": [
+            228
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terbaik bro ben keep it up till it last breath amieen ya alloh",
+          "doc_lines": [
+            229
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "betul abang baik keren",
+          "doc_lines": [
+            230
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "الحمدالله!! تروسكن اسها مورني",
+          "doc_lines": [
+            231
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [],
+      "sign_off_text": "Terima kasih. Semoga Allah membalas budi baik tuan/puan.",
+      "sign_off_doc_lines": [
+        788
+      ]
+    },
+    {
+      "reply_id": "tt-greet-001",
+      "intent": "GREETING",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        239,
+        276
+      ],
+      "matching_criteria": "a salutation carrying no other content",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        242
+      ],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Waalaikumussalam warahmatullahi wabarakatuh.",
+          "doc_lines": [
+            864
+          ]
+        },
+        {
+          "text": "Waalaikumussalam.",
+          "doc_lines": [
+            865
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "salam",
+          "doc_lines": [
+            245
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam wbt",
+          "doc_lines": [
+            246
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikum salam",
+          "doc_lines": [
+            246
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "walaikumsalam",
+          "doc_lines": [
+            246
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam alhamdulillah",
+          "doc_lines": [
+            246
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikumusalam",
+          "doc_lines": [
+            247
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam wbt alhamdulillah",
+          "doc_lines": [
+            247
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikummussalam",
+          "doc_lines": [
+            248
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam selamat pagi",
+          "doc_lines": [
+            248
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "walaikumusalam",
+          "doc_lines": [
+            248
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikumusalam alhamdulillah",
+          "doc_lines": [
+            249
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "walaikumusalam alhamdulillah",
+          "doc_lines": [
+            249
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikummusalam",
+          "doc_lines": [
+            250
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikummussalam warahmatullahiwabarokatuh",
+          "doc_lines": [
+            250
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "assalamualaikum sahabat lama",
+          "doc_lines": [
+            251
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "ASSALAMUALAIKUM",
+          "doc_lines": [
+            251
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Assalammualakum",
+          "doc_lines": [
+            251
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "assalamulaikum",
+          "doc_lines": [
+            251
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "asllm allkm",
+          "doc_lines": [
+            252
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "wslm",
+          "doc_lines": [
+            252
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "wassalam",
+          "doc_lines": [
+            252
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam wrbt",
+          "doc_lines": [
+            252
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam takziah",
+          "doc_lines": [
+            252
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam tuan",
+          "doc_lines": [
+            252
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "a.mualaikum bro.terbaik",
+          "doc_lines": [
+            253
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "ben bagi salam terbaik",
+          "doc_lines": [
+            253
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "asalamualaikom syukur saudara dapat menarik untuk saudara kita bukan islam syukur dapat",
+          "doc_lines": [
+            254
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [],
+      "sign_off_text": "Waalaikumussalam warahmatullahi wabarakatuh.",
+      "sign_off_doc_lines": [
+        789
+      ]
+    },
+    {
+      "reply_id": "tt-doareq-001",
+      "intent": "DOA_REQUEST",
+      "language": "ms",
+      "status": "provisional",
+      "doc_lines": [
+        277,
+        323
+      ],
+      "matching_criteria": "the commenter asking to be prayed for — a request whose object is the commenter's own wish, not the organisation's help",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        280
+      ],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "provisional",
+      "approved_phrasings": [
+        {
+          "text": "Aamiin, semoga Allah makbulkan hajat tuan/puan.",
+          "doc_lines": [
+            879
+          ]
+        },
+        {
+          "text": "Aamiin. Moga Allah makbulkan hajat tuan/puan.",
+          "doc_lines": [
+            880
+          ]
+        },
+        {
+          "text": "Aamiin ya Allah, semoga hajat tuan/puan dimakbulkan.",
+          "doc_lines": [
+            881
+          ]
+        },
+        {
+          "text": "Aamiin, semoga Allah perkenankan hajat tuan/puan.",
+          "doc_lines": [
+            882
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "Tolong DOAKAN saya jgk utk ke sana 😭😭😭",
+          "doc_lines": [
+            284
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "tolong doa saya jgk untuk ke sana",
+          "doc_lines": [
+            285
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "tolong doakn saya sahabat untuk saya dn suami dpt pergi buat umrah",
+          "doc_lines": [
+            286
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "salam shbt tolong doa saya dpt rezeki untuk mengerjakan umrah ye",
+          "doc_lines": [
+            287
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "doa kan saya semoga dapat menunaikan haji",
+          "doc_lines": [
+            288
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "w slm sya teringin nak pergi umrah tapi tak mampu doa kan tuk sya",
+          "doc_lines": [
+            289
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Doakan sy dan keluarga juga dpat menunaikan haji dan Umrah satu hari nnti",
+          "doc_lines": [
+            290
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Doakan saya , semoga Allah izinkan saya ziarah ke tanah suci juga.. Saya teringin sangat moga dijemput kesana.",
+          "doc_lines": [
+            291
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Doakan juga saya dan suami menjadi tetamu Allah",
+          "doc_lines": [
+            292
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Semoga saya juga berpeluang menjadi tetamu Allah",
+          "doc_lines": [
+            293
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "moga saya d jemput ke sana..🤲🤲",
+          "doc_lines": [
+            294
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "doakan sy Kaya raya utk Bantu org lain🙏🏻",
+          "doc_lines": [
+            295
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Ninie Salim: ya Allah.. semoga saya pun dapat pergi juga nanti🤲🏻",
+          "doc_lines": [
+            296
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [
+        {
+          "text": "tolong doa",
+          "reason": "prose_descriptor_not_a_variant",
+          "doc_lines": [
+            283
+          ]
+        }
+      ],
+      "sign_off_text": "Aamiin, semoga Allah makbulkan hajat tuan/puan.",
+      "sign_off_doc_lines": [
+        790
+      ]
+    },
+    {
+      "reply_id": "tt-thanks-001",
+      "intent": "BENEFICIARY_THANKS",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        324,
+        370
+      ],
+      "matching_criteria": "thanks from someone the organisation has already helped",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        327
+      ],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Alhamdulillah. Terima kasih kembali.",
+          "doc_lines": [
+            891
+          ]
+        },
+        {
+          "text": "Alhamdulillah. Sama-sama, terima kasih kembali.",
+          "doc_lines": [
+            892
+          ]
+        },
+        {
+          "text": "Alhamdulillah, terima kasih. Moga Allah permudahkan urusan tuan/puan.",
+          "doc_lines": [
+            893
+          ]
+        },
+        {
+          "text": "Alhamdulillah. Terima kasih kembali, semoga Allah memberkati tuan/puan.",
+          "doc_lines": [
+            894
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "terima kasih orang baik",
+          "doc_lines": [
+            329
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "trima kaseh orang baik",
+          "doc_lines": [
+            329
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terima kasih jadi orang baikkk",
+          "doc_lines": [
+            329
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terima kasih bro ben",
+          "doc_lines": [
+            330
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terima kasih bro ben ooi orang baikk mudah2an semuga allah mpermudahkan urusan",
+          "doc_lines": [
+            330
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah terima kasih bro ben",
+          "doc_lines": [
+            331
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terima kasih ben alhandulillah",
+          "doc_lines": [
+            331
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah terima kasih atas keperihatinan",
+          "doc_lines": [
+            332
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "terima kasih",
+          "doc_lines": [
+            333
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "syukur alhamdulilah terima kasih datang melawat ayah saya Dan bantuan pampers semoga Allah permudahkan semua urusan",
+          "doc_lines": [
+            334
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "alhamdulillah terima kasih bro ben atas lawatan kak farina semoga rezeki dan diberkati allah",
+          "doc_lines": [
+            335
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Alhamdulillah Terbaik En.Ben Oi tolong Keluarga dlm kesusahan",
+          "doc_lines": [
+            336
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "syukur Alhamdulilah,terima kasih Bro Ben Ooi",
+          "doc_lines": [
+            337
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Alhamdulillah bro ben dan terima kasih kerana membantu insan insan yg memerlukan bantuan.",
+          "doc_lines": [
+            338
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Intan kaseh: Tkaseh tuan srmoga abg sehat hendak nya",
+          "doc_lines": [
+            339
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "walaikkum salam sahabat yang sopptive terima kasih",
+          "doc_lines": [
+            340
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "macam saya dulu ayah tak boleh berjalan sekarang kenangan yang saya rindu terima kasih allah",
+          "doc_lines": [
+            341
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "tweu_313 terima kasih ben memudahkan orang dlm susah",
+          "doc_lines": [
+            342
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [],
+      "sign_off_text": "Alhamdulillah. Terima kasih kembali.",
+      "sign_off_doc_lines": [
+        791
+      ]
+    },
+    {
+      "reply_id": "tt-convert-001",
+      "intent": "CONVERT_CONGRATS",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        371,
+        395
+      ],
+      "matching_criteria": "congratulating or blessing someone on embracing Islam; eligible only on a conversion Post",
+      "matching_criteria_source": "derived",
+      "matching_criteria_doc_lines": [],
+      "minimum_match_threshold": 0.65,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Alhamdulillah. Semoga Allah kekalkan tuan/puan dalam hidayah-Nya.",
+          "doc_lines": [
+            900
+          ]
+        },
+        {
+          "text": "Alhamdulillah, tahniah. Moga Allah kekalkan tuan/puan dalam hidayah-Nya.",
+          "doc_lines": [
+            901
+          ]
+        },
+        {
+          "text": "Alhamdulillah. Semoga Allah tetapkan tuan/puan dalam hidayah-Nya.",
+          "doc_lines": [
+            902
+          ]
+        },
+        {
+          "text": "Alhamdulillah, syukur. Moga Allah kekalkan tuan/puan dalam hidayah-Nya.",
+          "doc_lines": [
+            903
+          ]
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "ahlan wa sahlan ilal islam.",
+          "doc_lines": [
+            376
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "waalaikumussalam wbt terima kasih syukur Alhamdulillaah selamat masuk Islam senyum ceria ye semoga kekal sampai akhir hayat",
+          "doc_lines": [
+            377
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "walaikumsallam sodara semualaf alhamdulillah allah permudahkan",
+          "doc_lines": [
+            378
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Alhamdulillah. bertuahnya. Kembali kpd fitrah",
+          "doc_lines": [
+            379
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Alhamdulillah... Semoga En Gary terus istiqamah dgn Islam hingga ke jannah.. Aamiinn, semoga mereka yang kembali ke agama fitrah terus mndpt bimbingan yg sewajarnya.. Aamiinn",
+          "doc_lines": [
+            380
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Alhamdulillah ugama yang fitrah 🥰🥰🥰🥰🥰🥰🥰",
+          "doc_lines": [
+            381
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [],
+      "sign_off_text": "Alhamdulillah. Semoga Allah kekalkan tuan/puan dalam hidayah-Nya.",
+      "sign_off_doc_lines": [
+        792
+      ]
+    },
+    {
+      "reply_id": "tt-join-001",
+      "intent": "JOIN_ENQUIRY",
+      "language": "ms",
+      "status": "escalate",
+      "doc_lines": [
+        396,
+        473
+      ],
+      "matching_criteria": "a commenter asking to join, participate in, or become part of the organisation's work",
+      "matching_criteria_source": "derived",
+      "matching_criteria_doc_lines": [],
+      "minimum_match_threshold": 0.2,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [],
+      "known_variants": [
+        {
+          "text": "Sy nk join pertubuhan ni boleh tak 😁",
+          "doc_lines": [
+            406
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Saya nak join bleh x",
+          "doc_lines": [
+            407
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "saya nak sertai bleh tak",
+          "doc_lines": [
+            407
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "saya nak sertai pertubuhan ni boleh tak",
+          "doc_lines": [
+            408
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "assalammualaikum boleh ke sekiranya saya nak sertai pertubuhan kebajikan modal insan pada siapa...",
+          "doc_lines": [
+            409
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Mr khai: kepala batas pulau pinang",
+          "doc_lines": [
+            410
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [
+        {
+          "text": "macam mana nak mohon. sy oku fizikal and now tgah hadapi risiko buta kekal. from klang",
+          "reason": "matched_but_not_this_intent",
+          "doc_lines": [
+            412
+          ]
+        },
+        {
+          "text": "MCM mna nak moham saya OKU pesakit stroke",
+          "reason": "matched_but_not_this_intent",
+          "doc_lines": [
+            413
+          ]
+        }
+      ],
+      "sign_off_text": null,
+      "sign_off_doc_lines": []
+    },
+    {
+      "reply_id": "tt-donate-001",
+      "intent": "DONATION_ENQUIRY",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        474,
+        512
+      ],
+      "matching_criteria": "a Comment asking how to contribute, give, or send money",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        485
+      ],
+      "minimum_match_threshold": 0.9,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+          "doc_lines": [
+            924
+          ]
+        },
+        {
+          "text": "Alhamdulillah. Terima kasih kerana support. Sumbangan boleh disalurkan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+          "doc_lines": [
+            925
+          ],
+          "expanded_from_reference": true
+        },
+        {
+          "text": "Alhamdulillah, terima kasih atas sokongan. Boleh salurkan sumbangan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+          "doc_lines": [
+            926
+          ],
+          "expanded_from_reference": true
+        }
+      ],
+      "known_variants": [
+        {
+          "text": "bagaimana kalau kita nak sumbang",
+          "doc_lines": [
+            487
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "bagaimana kalo kita nak menyumbang",
+          "doc_lines": [
+            488
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "Assalammualakum Tuan nk tanya mcm mna klu kita nk buat Sumbangan ikhlas",
+          "doc_lines": [
+            489
+          ],
+          "label": "observed"
+        },
+        {
+          "text": "tolong bagi account no persatuan walaupun sikit saya nak bantu insyaa allah",
+          "doc_lines": [
+            490
+          ],
+          "label": "observed"
+        }
+      ],
+      "variants_not_carried": [
+        {
+          "text": "HELP_REQUEST",
+          "reason": "documented_cross_reference",
+          "doc_lines": [
+            491
+          ]
+        },
+        {
+          "text": "tolong",
+          "reason": "prose_descriptor_not_a_variant",
+          "doc_lines": [
+            490
+          ]
+        }
+      ],
+      "sign_off_text": "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+      "sign_off_doc_lines": [
+        793
+      ]
+    },
+    {
+      "reply_id": "tt-zakat-001",
+      "intent": "ZAKAT_SEDEKAH_ENQUIRY",
+      "language": "ms",
+      "status": "approved",
+      "doc_lines": [
+        513,
+        559
+      ],
+      "matching_criteria": "a Comment that names zakat, sedekah or infaq and asks how to pay it",
+      "matching_criteria_source": "verbatim",
+      "matching_criteria_doc_lines": [
+        527
+      ],
+      "minimum_match_threshold": 0.9,
+      "threshold_status": "uncalibrated",
+      "approved_phrasings": [
+        {
+          "text": "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+          "doc_lines": [
+            924
+          ]
+        },
+        {
+          "text": "Alhamdulillah. Terima kasih kerana support. Sumbangan boleh disalurkan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+          "doc_lines": [
+            925
+          ],
+          "expanded_from_reference": true
+        },
+        {
+          "text": "Alhamdulillah, terima kasih atas sokongan. Boleh salurkan sumbangan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+          "doc_lines": [
+            926
+          ],
+          "expanded_from_reference": true
+        }
+      ],
+      "known_variants": [],
+      "variants_not_carried": [
+        {
+          "text": "Alhamdulillah... Semoga En Gary terus istiqamah dgn Islam hingga ke jannah.. Aamiinn, semoga mereka yang kembali ke agama fitrah terus mndpt bimbingan yg sewajarnya.. Aamiinn",
+          "reason": "documented_false_positive",
+          "doc_lines": [
+            531
+          ]
+        },
+        {
+          "text": "Alhamdulillah. bertuahnya. Kembali kpd fitrah",
+          "reason": "documented_false_positive",
+          "doc_lines": [
+            532
+          ]
+        },
+        {
+          "text": "Alhamdulillah ugama yang fitrah 🥰🥰🥰🥰🥰🥰🥰",
+          "reason": "documented_false_positive",
+          "doc_lines": [
+            533
+          ]
+        },
+        {
+          "text": "@Ben Ooi assalamualaikum.. Abg yang terlantar ni dah meninggal kan kita semua. Sedekah kan Al-Fatihah buat Salim Bin Othman. Semoga Allah menempatkan nya bersama hambaNya yg beriman.. aamiin",
+          "reason": "documented_false_positive",
+          "doc_lines": [
+            534
+          ]
+        }
+      ],
+      "sign_off_text": "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+      "sign_off_doc_lines": [
+        793
+      ],
+      "sign_off_is_reference": true
+    }
+  ]
+}

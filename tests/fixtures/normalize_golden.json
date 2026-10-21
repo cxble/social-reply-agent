@@ -1,0 +1,414 @@
+[
+  {
+    "input": "",
+    "normalized": ""
+  },
+  {
+    "input": "   ",
+    "normalized": ""
+  },
+  {
+    "input": "🙂",
+    "normalized": ""
+  },
+  {
+    "input": "!!!",
+    "normalized": ""
+  },
+  {
+    "input": "x",
+    "normalized": "tak"
+  },
+  {
+    "input": "takde",
+    "normalized": "tak ada"
+  },
+  {
+    "input": "takdak",
+    "normalized": "tak ada"
+  },
+  {
+    "input": "nk",
+    "normalized": "nak"
+  },
+  {
+    "input": "nok",
+    "normalized": "nak"
+  },
+  {
+    "input": "na",
+    "normalized": "nak"
+  },
+  {
+    "input": "sy",
+    "normalized": "saya"
+  },
+  {
+    "input": "aku",
+    "normalized": "saya"
+  },
+  {
+    "input": "aq",
+    "normalized": "saya"
+  },
+  {
+    "input": "sye",
+    "normalized": "saya"
+  },
+  {
+    "input": "yg",
+    "normalized": "yang"
+  },
+  {
+    "input": "utk",
+    "normalized": "untuk"
+  },
+  {
+    "input": "untk",
+    "normalized": "untuk"
+  },
+  {
+    "input": "dgn",
+    "normalized": "dengan"
+  },
+  {
+    "input": "dgan",
+    "normalized": "dengan"
+  },
+  {
+    "input": "klu",
+    "normalized": "kalau"
+  },
+  {
+    "input": "kalo",
+    "normalized": "kalau"
+  },
+  {
+    "input": "kalu",
+    "normalized": "kalau"
+  },
+  {
+    "input": "mcm",
+    "normalized": "macam"
+  },
+  {
+    "input": "mcm2",
+    "normalized": "macam-macam"
+  },
+  {
+    "input": "cmne",
+    "normalized": "macam mana"
+  },
+  {
+    "input": "mcmne",
+    "normalized": "macam mana"
+  },
+  {
+    "input": "mcmana",
+    "normalized": "macam mana"
+  },
+  {
+    "input": "mcm mana",
+    "normalized": "macam mana"
+  },
+  {
+    "input": "bgtau",
+    "normalized": "beritahu"
+  },
+  {
+    "input": "bg",
+    "normalized": "bagi"
+  },
+  {
+    "input": "lg",
+    "normalized": "lagi"
+  },
+  {
+    "input": "skrg",
+    "normalized": "sekarang"
+  },
+  {
+    "input": "tq",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "ty",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "tqq",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "thx",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "thanks",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "thank you",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "t kasih",
+    "normalized": "terima kasih"
+  },
+  {
+    "input": "terima kasih byk",
+    "normalized": "terima kasih banyak"
+  },
+  {
+    "input": "tlg",
+    "normalized": "tolong"
+  },
+  {
+    "input": "pls",
+    "normalized": "tolong"
+  },
+  {
+    "input": "please",
+    "normalized": "tolong"
+  },
+  {
+    "input": "moga",
+    "normalized": "semoga"
+  },
+  {
+    "input": "smga",
+    "normalized": "semoga"
+  },
+  {
+    "input": "smoga",
+    "normalized": "semoga"
+  },
+  {
+    "input": "amin",
+    "normalized": "aamiin"
+  },
+  {
+    "input": "aminn",
+    "normalized": "aamiin"
+  },
+  {
+    "input": "aamin",
+    "normalized": "aamiin"
+  },
+  {
+    "input": "ameen",
+    "normalized": "aamiin"
+  },
+  {
+    "input": "aamiin ya rabbal alamin",
+    "normalized": "aamiin"
+  },
+  {
+    "input": "assalamualaikum",
+    "normalized": "salam"
+  },
+  {
+    "input": "assalamualikum",
+    "normalized": "salam"
+  },
+  {
+    "input": "asalamualaikum",
+    "normalized": "salam"
+  },
+  {
+    "input": "salamualaikum",
+    "normalized": "salam"
+  },
+  {
+    "input": "salam sejahtera",
+    "normalized": "salam"
+  },
+  {
+    "input": "aslm",
+    "normalized": "salam"
+  },
+  {
+    "input": "waalaikumussalam",
+    "normalized": "salam"
+  },
+  {
+    "input": "waalaikumsalam",
+    "normalized": "salam"
+  },
+  {
+    "input": "wsalam",
+    "normalized": "salam"
+  },
+  {
+    "input": "org",
+    "normalized": "orang"
+  },
+  {
+    "input": "sumbangan",
+    "normalized": "sumbang"
+  },
+  {
+    "input": "menyumbang",
+    "normalized": "sumbang"
+  },
+  {
+    "input": "donate",
+    "normalized": "sumbang"
+  },
+  {
+    "input": "donation",
+    "normalized": "sumbang"
+  },
+  {
+    "input": "infak",
+    "normalized": "infaq"
+  },
+  {
+    "input": "sedeqah",
+    "normalized": "sedekah"
+  },
+  {
+    "input": "zakatt",
+    "normalized": "zakat"
+  },
+  {
+    "input": "bantuan",
+    "normalized": "bantu"
+  },
+  {
+    "input": "menbantu",
+    "normalized": "bantu"
+  },
+  {
+    "input": "membantu",
+    "normalized": "bantu"
+  },
+  {
+    "input": "kesusahan",
+    "normalized": "susah"
+  },
+  {
+    "input": "susahhh",
+    "normalized": "susahh"
+  },
+  {
+    "input": "penderitaan",
+    "normalized": "derita"
+  },
+  {
+    "input": "muallaf",
+    "normalized": "mualaf"
+  },
+  {
+    "input": "syahadah",
+    "normalized": "syahadah"
+  },
+  {
+    "input": "masuk islam",
+    "normalized": "masuk islam"
+  },
+  {
+    "input": "peluk islam",
+    "normalized": "masuk islam"
+  },
+  {
+    "input": "join",
+    "normalized": "sertai"
+  },
+  {
+    "input": "sertai lah",
+    "normalized": "sertai"
+  },
+  {
+    "input": "keahlian",
+    "normalized": "ahli"
+  },
+  {
+    "input": "member",
+    "normalized": "ahli"
+  },
+  {
+    "input": "doakan",
+    "normalized": "doa kan"
+  },
+  {
+    "input": "doakanlah",
+    "normalized": "doa kan"
+  },
+  {
+    "input": "doadoakan",
+    "normalized": "doa kan"
+  },
+  {
+    "input": "murah rezeki",
+    "normalized": "rezeki"
+  },
+  {
+    "input": "insya allah",
+    "normalized": "insyaallah"
+  },
+  {
+    "input": "bagusss",
+    "normalized": "baguss"
+  },
+  {
+    "input": "aaminnn",
+    "normalized": "aaminn"
+  },
+  {
+    "input": "doa",
+    "normalized": "doa"
+  },
+  {
+    "input": "doakan saya",
+    "normalized": "doa kan saya"
+  },
+  {
+    "input": "doa saya",
+    "normalized": "doa saya"
+  },
+  {
+    "input": "nak mohon",
+    "normalized": "nak mohon"
+  },
+  {
+    "input": "nak moham",
+    "normalized": "nak moham"
+  },
+  {
+    "input": "tolong doakan saya jgk utk ke sana",
+    "normalized": "tolong doa kan saya jgk untuk ke sana"
+  },
+  {
+    "input": "alhamdulillah",
+    "normalized": "alhamdulillah"
+  },
+  {
+    "input": "alhamdulillah semoga cepat sembuh",
+    "normalized": "alhamdulillah semoga cepat sembuh"
+  },
+  {
+    "input": "Allahuakhbar",
+    "normalized": "allahuakhbar"
+  },
+  {
+    "input": "Sy nk join pertubuhan ni boleh tak 😁",
+    "normalized": "saya nak sertai pertubuhan ni boleh tak"
+  },
+  {
+    "input": "Saya nak join bleh x",
+    "normalized": "saya nak sertai bleh tak"
+  },
+  {
+    "input": "assalammualakum boleh ke sekiranya saya nak sertai pertubuhan kebajikan modal insan pada siapa...",
+    "normalized": "assalammualakum boleh ke sekiranya saya nak sertai pertubuhan kebajikan modal insan pada siapa"
+  },
+  {
+    "input": "macam mana nak mohon. sy oku fizikal and now tgah hadapi risiko buta kekal. from klang",
+    "normalized": "macam mana nak mohon saya oku fizikal and now tgah hadapi risiko buta kekal from klang"
+  },
+  {
+    "input": "MCM mna nak moham saya OKU pesakit stroke",
+    "normalized": "macam mna nak moham saya oku pesakit stroke"
+  }
+]
