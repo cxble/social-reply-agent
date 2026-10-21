@@ -683,12 +683,16 @@ gets answered — automatically, publicly, with no human in the loop — by post
 the agent can make to a stranger unrecoverably, and it is why the boundary is drawn as **give or
 receive** rather than as a word list.
 
-**One class here has no Intent at all.** `camna cara leh bantu dia` and `BRO Ben mcm mana nak Bantu
-beliau` are readers asking how *they* can help a case in the Post — a would-be donor or volunteer,
-which is the opposite of a plea. Nothing in the table answers them; today they would land on
-`HELP_REQUEST` and escalate silently. That is safe, and it is also a silent refusal to the one
-audience the organisation most wants. It should be decided deliberately — as its own Intent or as
-a Tail entry — rather than left as a side effect of a keyword.
+**One class here has no Intent at all, and that is now the decision.** `camna cara leh bantu dia`
+and `BRO Ben mcm mana nak Bantu beliau` are readers asking how *they* can help a case in the Post —
+a would-be donor or volunteer, which is the opposite of a plea. **Decided 2026-10-21: the class is
+left to the Tail and Escalates as a gap to close**, rather than being given an Intent of its own.
+It is the audience the organisation most wants, and answering it is the organisation's own words —
+a canned acknowledgement would spend the approach on a formality — so it goes to a person by
+design. What the decision forbids is the current *accidental* behaviour: the class must not be
+swept into `HELP_REQUEST`'s Variants. A contributor and a person in difficulty are opposites, and
+routing both the same way is how the first one is lost. An entry may be written for it later; that
+is ordinary maintenance, not a re-opening of this.
 
 ---
 
@@ -981,14 +985,20 @@ claim either way.
    rotation kept durably, so the same row is not drawn twice in a row. Two open choices: whether
    `tt-greet-001` stays a deck of two (see its note) and whether `tt-doa-001` is widened, since it
    is the entry the peak-volume arithmetic most clearly argues for.
-5. **Decide the "how do I help him?" class.** `camna cara leh bantu dia` and `BRO Ben mcm mana nak
-   Bantu beliau` are readers asking how to contribute to a case in the Post — the opposite of a
-   plea. No Intent covers them, so today they land on `HELP_REQUEST` and escalate silently: a lost
-   reply to the audience the organisation most wants. Either its own Intent or a Tail entry, but a
-   decision rather than a side effect.
-6. **Three holes in ADR 0006 are identified and not yet written down.** The ADR says a challenged
-   Session stops the agent, posts nothing, and never re-authenticates — but not how a challenge
-   that is *not a page state* is detected (silent truncation), not what happens when a captcha
-   arrives mid-post (never blind-retry an unknown outcome), and not that Reconciliation must tell
-   "cannot tell" from "no Reply here" or it re-posts everything. Those belong in the ADR and in
-   spec issue #1 before `/to-tickets`.
+5. **The "how do I help him?" class is decided: a Tail entry, not an Intent.** `camna cara leh
+   bantu dia` and `BRO Ben mcm mana nak Bantu beliau` are readers asking how to contribute to a case
+   in the Post — the opposite of a plea. Decided 2026-10-21: the class stays uncovered by a Canned
+   reply and **Escalates as a Tail Comment**, so a person answers the audience the organisation most
+   wants in the organisation's own words. The operative consequence is negative and matters more
+   than the label: **its words must not be swept into `HELP_REQUEST`'s Variants**, because the
+   current silent behaviour is exactly that, and a contributor filed as a person in difficulty is
+   lost. See § `HELP_REQUEST`.
+6. **The three holes in ADR 0006 are written down, 2026-10-21.** The ADR now records, under § The
+   three holes this left: that a challenge which is *not a page state* is detected by the read's
+   count failing to agree with `total` (a **Truncated read**, which stops the pass and leaves a
+   marker); that a captcha arriving mid-post leaves the Reply an **Unknown outcome**, recorded as
+   its own state and never blind-retried, because a retry is how the same Reply is posted twice;
+   and that Reconciliation has **three** verdicts, with "cannot tell" actioned by nothing, because
+   collapsing it into "no Reply here" re-posts every Reply the agent has ever made. All three are
+   in spec issue #1 as user stories 81–83 and as Failure behaviours, which was the stated
+   precondition for `/to-tickets`.
