@@ -201,6 +201,14 @@ _Avoid_: ban, block, strike, suspension
 A locator that still matches an element, but now the wrong one.
 _Avoid_: breakage, brittleness, deprecation
 
+**Truncated read**:
+A read of a Platform's Comments that stopped before the Platform had served them all, without any page announcing a challenge. It is a Session failure rather than a thin corpus, and the two are indistinguishable from the pages alone.
+_Avoid_: short read, partial harvest, incomplete pass
+
+**Unknown outcome**:
+A Reply whose submit was attempted and whose result is not known — neither posted nor not-posted. It is recorded as its own state and settled later by Reconciliation, never by retrying.
+_Avoid_: failed post, pending, unconfirmed
+
 **Recorded page**:
 A saved copy of a Platform's page, used to develop and test an Adapter without touching the live site.
 _Avoid_: fixture, mock, snapshot, stub
