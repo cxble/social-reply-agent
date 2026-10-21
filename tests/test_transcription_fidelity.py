@@ -21,6 +21,7 @@ deletion passes silently.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,23 @@ RECORD_PATH = Path(__file__).parent / "fixtures" / "approval_record_tiktok.json"
 DOCUMENT_PATH = REPO_ROOT / "docs" / "reply-table-tiktok.md"
 
 DOCUMENT_LINES = DOCUMENT_PATH.read_text(encoding="utf-8").splitlines()
+
+_HEADING = re.compile(r"^###\s+`(tt-[a-z0-9-]+)`")
+
+
+def _section_of_each_line() -> dict[int, str | None]:
+    """The reply-id section each document line falls in, by its nearest heading."""
+    section: str | None = None
+    sections: dict[int, str | None] = {}
+    for number, line in enumerate(DOCUMENT_LINES, 1):
+        match = _HEADING.match(line)
+        if match:
+            section = match.group(1)
+        sections[number] = section
+    return sections
+
+
+SECTION_OF_LINE = _section_of_each_line()
 
 
 @pytest.fixture(scope="module")
@@ -180,8 +198,6 @@ def test_recorded_phrasings_are_quoted_on_the_lines_they_cite(record_entries) ->
     resolved, and -- where the document writes `(block as row 1, verbatim)` rather than
     repeating the bank details -- the block taken from row 1's own cell.
     """
-    import re
-
     def cell(doc_line: int) -> str:
         match = re.match(r"^\|\s*\d+\s*\|\s*(.*?)\s*\|\s*$", DOCUMENT_LINES[doc_line - 1])
         assert match, f"line {doc_line} is not a phrasing row: {DOCUMENT_LINES[doc_line - 1]!r}"
@@ -202,6 +218,52 @@ def test_recorded_phrasings_are_quoted_on_the_lines_they_cite(record_entries) ->
                 f"{reply_id}: recorded text does not match document line {item['doc_lines']}\n"
                 f"  document: {document_text!r}\n  recorded: {item['text']!r}"
             )
+
+
+def test_variants_are_cited_from_their_own_entry_section(record_entries) -> None:
+    """Provenance has to point into the entry's own section, not merely at some line
+    that quotes the same words.
+
+    The document quotes two of these Comments under more than one Intent -- the same
+    Comment filed as both `DOA_BLESSING` and `PRAISE_ENCOURAGE` -- so "the quoted text
+    appears on a cited line" cannot tell a right filing from a wrong one. Without this,
+    a variant could be moved into the wrong entry and cited at the other entry's line
+    and every check above would still pass.
+    """
+    for reply_id, recorded in record_entries.items():
+        for item in recorded["known_variants"]:
+            owners = {SECTION_OF_LINE[n] for n in item["doc_lines"]}
+            assert owners == {reply_id}, (
+                f"{reply_id}: variant is cited from {sorted(str(o) for o in owners)}, "
+                f"not from its own section:\n{item['text']!r}"
+            )
+
+
+def test_phrasings_are_cited_from_their_own_entry_section(record_entries) -> None:
+    """The same invariant for approved text, allowing the document's one shared table.
+
+    `tt-zakat-001` posts the same rows as `tt-donate-001` rather than repeating them,
+    which the record marks with `sign_off_is_reference`. That sharing must be exact row
+    for row: a by-reference entry that cited another entry's section and then carried
+    *different* text would be posting text nobody approved for it.
+    """
+    for reply_id, recorded in record_entries.items():
+        phrasings = recorded["approved_phrasings"]
+        if not phrasings:
+            continue
+        owners = {SECTION_OF_LINE[n] for item in phrasings for n in item["doc_lines"]}
+        if not recorded.get("sign_off_is_reference"):
+            assert owners == {reply_id}, (
+                f"{reply_id}: text is cited from {sorted(str(o) for o in owners)}, "
+                f"not from its own section"
+            )
+            continue
+        assert len(owners) == 1, f"{reply_id}: by-reference rows cite several sections"
+        referent = next(iter(owners))
+        assert referent in record_entries, f"{reply_id}: cites unknown section {referent!r}"
+        assert [item["text"] for item in phrasings] == [
+            item["text"] for item in record_entries[referent]["approved_phrasings"]
+        ], f"{reply_id}: shares {referent}'s rows by reference but does not match them"
 
 
 def test_every_excluded_string_carries_a_reason_and_a_line(record_entries) -> None:
