@@ -1,12 +1,46 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from agent.matching import Matcher
+import pytest
+
+from agent.matching import VARIANT_PRECEDENCE, Matcher
 from agent.normalize import CORE, normalize
-from agent.reply_table import STATUSES, load_reply_table, reply_table_path
+from agent.reply_table import STATUSES, ReplyTable, ReplyTableEntry, load_reply_table, reply_table_path
+
+DOCUMENT_LINES = (
+    Path(__file__).resolve().parent.parent / "docs" / "reply-table-tiktok.md"
+).read_text(encoding="utf-8").splitlines()
+
+RECORD_PATH = Path(__file__).parent / "fixtures" / "approval_record_tiktok.json"
+
+ADR_LINES = (
+    Path(__file__).resolve().parent.parent
+    / "docs"
+    / "adr"
+    / "0019-an-uncertain-reading-never-reaches-the-write-path.md"
+).read_text(encoding="utf-8").splitlines()
+
+
+def _adr_tier(tier: str) -> set[str]:
+    """The Intents the ADR's tier table names in one of its tiers."""
+    row = next(line for line in ADR_LINES if line.startswith(f"| **{tier}** |"))
+    cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+    return set(re.findall(r"`([A-Z_]+)`", cells[1]))
+
+# The two Comments the approval record files under both `DOA_BLESSING` and
+# `PRAISE_ENCOURAGE`, in the record's own spellings.
+OVERLAPPING_COMMENTS = (
+    "good job. semuga dipermudahkan segala urusan Perubatan Dan kembali sihat",
+    "terbaik bro Ben. Keep it up till it last breath. Amieen Ya Alloh.",
+)
+
+
+def _document_line(number: int) -> str:
+    return DOCUMENT_LINES[number - 1]
 
 
 @dataclass
@@ -64,35 +98,67 @@ def test_settled_tier_values_are_as_the_document_assigns_them() -> None:
     by_intent = {entry.intent: entry.minimum_match_threshold for entry in table.entries}
     for intent in {'DONATION_ENQUIRY', 'ZAKAT_SEDEKAH_ENQUIRY'}:
         assert by_intent[intent] == 0.9
-    for intent in {'DOA_BLESSING', 'GREETING', 'PRAISE_ENCOURAGE', 'BENEFICIARY_THANKS', 'CONVERT_CONGRATS'}:
+    for intent in {'DOA_BLESSING', 'DOA_REQUEST', 'GREETING', 'PRAISE_ENCOURAGE', 'BENEFICIARY_THANKS', 'CONVERT_CONGRATS'}:
         assert by_intent[intent] == 0.65
     assert by_intent['JOIN_ENQUIRY'] == 0.2
 
 
-def test_doa_request_threshold_is_carried_but_not_settled_here() -> None:
-    """`DOA_REQUEST` sits in no tier the document names, and this test must not invent one.
+def test_the_adr_names_exactly_the_entries_its_tiers_bind() -> None:
+    """The tier numbers are a claim about the ADR, so the ADR has to agree with them.
 
-    ADR 0019 lists a Consequential tier, an Acknowledgement tier, an Escalation gate
-    band and a Floor. `DOA_REQUEST` is in none of them: it is the entry the document
-    leaves open, and the architecture ticket decides where it lands. The table carries
-    a working value so the matching path is exercised end to end -- that value is not
-    an architectural rule, and asserting it as one here would settle the dispute by
-    accident. The assertion below is agreement with the reviewed record, which labels
-    the number provisional, not agreement with a tier.
+    This is the drift that produced the `DOA_REQUEST` item: the ADR's Acknowledgement
+    row simply omitted the entry, so 0.65 had no architectural basis in the one place
+    the tiers are justified. `HELP_REQUEST` is absent from the table by design -- it is
+    an Escalation gate with no entry to hold a threshold -- so the gates are compared
+    against the ADR only for the Intents the table actually carries.
     """
     table = load_reply_table()
-    by_intent = {entry.intent: entry for entry in table.entries}
-    assert 'DOA_REQUEST' in by_intent
-    recorded = json.loads(
-        (Path(__file__).parent / "fixtures" / "approval_record_tiktok.json").read_text()
+    for tier, threshold in (("Acknowledgement", 0.65), ("Consequential", 0.9)):
+        carried = {
+            entry.intent for entry in table.entries if entry.minimum_match_threshold == threshold
+        }
+        assert _adr_tier(tier) == carried, (
+            f"{tier}: the ADR names {sorted(_adr_tier(tier))} and the table binds "
+            f"{sorted(carried)} at {threshold}"
+        )
+    gates = _adr_tier("Escalation gates")
+    assert gates == {"HELP_REQUEST", "JOIN_ENQUIRY"}
+    carried_gates = {
+        entry.intent for entry in table.entries if entry.minimum_match_threshold == 0.2
+    }
+    assert carried_gates <= gates, 'an entry sits at the help threshold that the ADR does not name'
+
+
+def test_doa_request_is_an_acknowledgement_and_its_number_is_uncalibrated() -> None:
+    """`DOA_REQUEST` is in the Acknowledgement tier; the *number* is not yet calibrated.
+
+    The document sets the tiers by what a wrong Reply costs and gives the
+    acknowledgement classes 0.65, which is where this entry belongs: its rows post a
+    canned acknowledgement that "promises no action beyond the doa itself". What is
+    not settled is the calibration -- the document says once, for the whole table,
+    that the numbers are provisional because they are claims about a Router that does
+    not exist in this repository. The tier and the uncertainty are recorded in
+    different places on purpose: the tier binds the entry, the uncertainty covers all
+    ten numbers at once, and repeating it per entry would restate a single sentence
+    ten times.
+    """
+    table = load_reply_table()
+    entry = next(e for e in table.entries if e.intent == 'DOA_REQUEST')
+    assert entry.minimum_match_threshold == 0.65, 'the acknowledgement tier is 0.65'
+    assert entry.status == 'approved'
+
+    record = json.loads(RECORD_PATH.read_text())
+    assert record['threshold_status'] == 'provisional'
+    assert record['threshold_status_doc_lines'] == [961]
+    assert 'provisional' in _document_line(961), (
+        'the record cites a line that no longer says the numbers are provisional'
     )
-    recorded_entry = next(e for e in recorded["entries"] if e["intent"] == "DOA_REQUEST")
-    assert recorded_entry["threshold_status"] == "provisional", (
-        "the record no longer marks the DOA_REQUEST threshold provisional; if the "
-        "architecture ticket has settled it, fix this test deliberately and cite the ADR"
-    )
-    assert by_intent['DOA_REQUEST'].minimum_match_threshold == recorded_entry["minimum_match_threshold"]
-    assert by_intent['DOA_REQUEST'].status == "provisional"
+    for recorded in record['entries']:
+        assert 'threshold_status' not in recorded, (
+            f"{recorded['reply_id']}: calibration is recorded per entry as well as for "
+            "the table as a whole; the document states it once"
+        )
+    assert 'threshold_status' not in json.loads(reply_table_path().read_text())[0]
 
 
 def test_escalation_gated_intents_hold_no_postable_text() -> None:
@@ -166,3 +232,77 @@ def test_a_help_shaped_comment_is_not_variant_matched() -> None:
     assert client.call_count == 1, 'the Comment was matched by a variant instead of reaching the Router'
     known_forms = {normalize(v) for entry in table.entries for v in entry.known_variants}
     assert result.normalized_comment not in known_forms
+
+
+def test_a_variant_filed_under_two_intents_resolves_to_the_declared_winner() -> None:
+    """A Comment the record files twice is answered by a declared entry, not by file order.
+
+    Both Comments below are in the record under `DOA_BLESSING` *and*
+    `PRAISE_ENCOURAGE`, in different spellings that normalize to the same form. The
+    blessing entry wins because the praise entry's own `matching_criteria` excludes
+    them: praise here is "praise or encouragement with no request and no explicit
+    doa", and both Comments carry an explicit doa.
+    """
+    assert 'tt-doa-002' in VARIANT_PRECEDENCE
+    assert 'tt-praise-001' not in VARIANT_PRECEDENCE, (
+        'the praise entry must not outrank the blessing entry: its own criteria '
+        'exclude a Comment carrying an explicit doa'
+    )
+    record = json.loads(RECORD_PATH.read_text())
+    praise = next(e for e in record['entries'] if e['reply_id'] == 'tt-praise-001')
+    assert 'no explicit doa' in praise['matching_criteria']
+
+    table = load_reply_table()
+    for comment in OVERLAPPING_COMMENTS:
+        client = DecisionsClientDouble(raises=True)
+        result = Matcher(table, client).match_comment(comment)
+        assert result.entry is not None, comment
+        assert result.entry.reply_id == 'tt-doa-002', comment
+        assert client.call_count == 0, 'a variant hit must not reach the Router'
+
+    for reply_id in ('tt-doa-002', 'tt-praise-001'):
+        carried = {normalize(v) for v in table.by_reply_id(reply_id).known_variants}
+        for comment in OVERLAPPING_COMMENTS:
+            assert normalize(comment) in carried, (
+                f'{reply_id} no longer carries the Comment the record files under it. '
+                'The record lists these twice; the overlap is resolved by precedence, '
+                'not by deleting a variant from an entry that has one.'
+            )
+
+
+def test_reordering_the_reply_table_cannot_change_which_entry_answers() -> None:
+    """Precedence is declared, so the order of the entries in the JSON must not matter."""
+    table = load_reply_table()
+    shuffled = ReplyTable(entries=tuple(reversed(table.entries)))
+    assert [e.reply_id for e in shuffled.entries] != [e.reply_id for e in table.entries]
+
+    for comment in OVERLAPPING_COMMENTS:
+        forwards = Matcher(table, DecisionsClientDouble(raises=True)).match_comment(comment)
+        backwards = Matcher(shuffled, DecisionsClientDouble(raises=True)).match_comment(comment)
+        assert forwards.entry is not None, comment
+        assert backwards.entry is not None, comment
+        assert forwards.entry.reply_id == backwards.entry.reply_id == 'tt-doa-002', (
+            f'{comment!r}: reversing the reply table changed which entry answers it'
+        )
+
+
+def test_an_undeclared_overlap_is_refused_rather_than_resolved_by_order() -> None:
+    """A new overlap has to fail loudly, because the alternative is a silent last-writer-wins."""
+
+    def claiming(reply_id: str) -> ReplyTableEntry:
+        return ReplyTableEntry(
+            reply_id=reply_id,
+            language='en',
+            intent='PRAISE_ENCOURAGE',
+            status='approved',
+            approved_phrasings=('invented phrasing',),
+            matching_criteria='invented criteria',
+            known_variants=('invented shared variant',),
+            minimum_match_threshold=0.65,
+        )
+
+    overlapping = ReplyTable(
+        entries=(claiming('tt-alpha-001'), claiming('tt-beta-001'))
+    )
+    with pytest.raises(ValueError, match='VARIANT_PRECEDENCE'):
+        Matcher(overlapping, DecisionsClientDouble())
