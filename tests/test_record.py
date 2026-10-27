@@ -321,6 +321,7 @@ def test_every_outcome_has_the_verdict_the_record_assigns_it():
         Outcome.UNCERTAIN,
         Outcome.ESCALATION_GATED_INTENT,
         Outcome.UNCONFIRMED_IDENTIFIER,
+        Outcome.UNKNOWN_OUTCOME,
     }
     assert NON_ESCALATING_OUTCOMES == {Outcome.CANNED_REPLY, Outcome.NO_REPLY}
     for outcome in ESCALATING_OUTCOMES:

@@ -63,6 +63,7 @@ class Outcome(Enum):
     CONFLICTING_INTENTS = "conflicting intents"
     UNCONFIRMED_IDENTIFIER = "identifier unconfirmed at write time"
     ESCALATION_GATED_INTENT = "escalation-gated intent"
+    UNKNOWN_OUTCOME = "unknown outcome"
 
 
 # D1 -- every Outcome gets an escalation verdict, and the partition is total.
@@ -70,7 +71,7 @@ class Outcome(Enum):
 # The two sets below are the whole decision of who is shown a Comment, split by
 # outcome rather than by a rule buried in the pass. The point is that they must
 # stay a *partition*: `test_outcome_partition_is_total_and_disjoint` asserts they
-# are disjoint and that their union is exactly `set(Outcome)`, so adding a ninth
+# are disjoint and that their union is exactly `set(Outcome)`, so adding an
 # Outcome fails the suite until someone decides, in writing, whether a human sees
 # it. A default -- "new outcomes are silent" or "new outcomes escalate" -- would
 # let an outcome go silent by omission, which is the failure ADR 0018 spends its
@@ -79,10 +80,17 @@ class Outcome(Enum):
 #
 # Escalating means a human is shown the Comment: the Tail (OUT_OF_SCOPE), a bar
 # that refused it, an unsure or conflicting reading, an escalation-gated Intent,
-# and an identifier that could not be confirmed at write time. Not escalating
+# an identifier that could not be confirmed at write time, and a write that was
+# submitted but not confirmed (the glossary's "Unknown outcome"). Not escalating
 # means nobody is: a posted Canned reply is its own record, and NO_REPLY is the
 # 61.1% the design is *working* on -- showing those to a human is how the sink
 # stops being read (ADR 0014, ADR 0018).
+#
+# UNKNOWN_OUTCOME escalates on purpose. A write whose result is not known may or
+# may not have posted publicly; nothing about it is self-evident from the page,
+# and settling it is Reconciliation's job and never a retry. Silence would leave
+# a possible public duplicate Reply for nobody to see, which is the one thing the
+# sink exists to prevent.
 ESCALATING_OUTCOMES = frozenset(
     {
         Outcome.OUT_OF_SCOPE,
@@ -91,6 +99,7 @@ ESCALATING_OUTCOMES = frozenset(
         Outcome.UNCERTAIN,
         Outcome.ESCALATION_GATED_INTENT,
         Outcome.UNCONFIRMED_IDENTIFIER,
+        Outcome.UNKNOWN_OUTCOME,
     }
 )
 
