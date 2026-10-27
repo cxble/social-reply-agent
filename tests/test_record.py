@@ -12,12 +12,15 @@ from pathlib import Path
 import pytest
 
 from agent.record import (
+    ESCALATING_OUTCOMES,
     CommentAlreadyRecorded,
     CommentNotFound,
     CommentRecord,
     CommentStore,
+    NON_ESCALATING_OUTCOMES,
     Outcome,
     ReplyStatus,
+    escalates,
     store_path,
 )
 
@@ -296,3 +299,31 @@ def test_get_names_the_missing_record(store):
 def test_update_reply_status_names_a_missing_record(store):
     with pytest.raises(CommentNotFound):
         store.update_reply_status("tiktok", "not-recorded", ReplyStatus.UNKNOWN)
+
+
+# --- K: every Outcome has a hand-decided escalation verdict (D1) --------------
+
+
+def test_outcome_partition_is_total_and_disjoint():
+    # The partition is the whole decision of who is shown a Comment. Adding a
+    # ninth Outcome fails this test until someone decides, in writing, whether a
+    # human sees it -- a default would let a new outcome go silent by omission,
+    # which is the failure ADR 0018 forbids.
+    assert ESCALATING_OUTCOMES.isdisjoint(NON_ESCALATING_OUTCOMES)
+    assert ESCALATING_OUTCOMES | NON_ESCALATING_OUTCOMES == set(Outcome)
+
+
+def test_every_outcome_has_the_verdict_the_record_assigns_it():
+    assert ESCALATING_OUTCOMES == {
+        Outcome.OUT_OF_SCOPE,
+        Outcome.BELOW_MINIMUM_MATCH_THRESHOLD,
+        Outcome.CONFLICTING_INTENTS,
+        Outcome.UNCERTAIN,
+        Outcome.ESCALATION_GATED_INTENT,
+        Outcome.UNCONFIRMED_IDENTIFIER,
+    }
+    assert NON_ESCALATING_OUTCOMES == {Outcome.CANNED_REPLY, Outcome.NO_REPLY}
+    for outcome in ESCALATING_OUTCOMES:
+        assert escalates(outcome) is True, outcome
+    for outcome in NON_ESCALATING_OUTCOMES:
+        assert escalates(outcome) is False, outcome

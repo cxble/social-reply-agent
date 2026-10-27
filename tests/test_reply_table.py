@@ -7,9 +7,17 @@ from pathlib import Path
 
 import pytest
 
-from agent.matching import VARIANT_PRECEDENCE, Matcher
+from agent.matching import VARIANT_PRECEDENCE, Decisions, Matcher
 from agent.normalize import CORE, normalize
-from agent.reply_table import STATUSES, ReplyTable, ReplyTableEntry, load_reply_table, reply_table_path
+from agent.record import Outcome
+from agent.reply_table import (
+    STATUSES,
+    ReplyTable,
+    ReplyTableEntry,
+    _validate_entry,
+    load_reply_table,
+    reply_table_path,
+)
 
 DOCUMENT_LINES = (
     Path(__file__).resolve().parent.parent / "docs" / "reply-table-tiktok.md"
@@ -46,6 +54,7 @@ def _document_line(number: int) -> str:
 @dataclass
 class DecisionsClientDouble:
     reply_id: str | None = None
+    confidence: float = 1.0
     call_count: int = 0
     seen: list[str] | None = None
     raises: bool = False
@@ -54,12 +63,14 @@ class DecisionsClientDouble:
         if self.seen is None:
             self.seen = []
 
-    def decide(self, normalized_comment: str) -> str | None:
+    def decide(self, normalized_comment: str, options) -> Decisions | None:
         self.call_count += 1
         self.seen.append(normalized_comment)
         if self.raises:
             raise AssertionError('Router should not be called')
-        return self.reply_id
+        if self.reply_id is None:
+            return None
+        return Decisions(confidences={self.reply_id: self.confidence})
 
 
 def test_table_loads_from_version_control_with_all_fields() -> None:
@@ -390,3 +401,166 @@ def test_router_unknown_reply_id_is_a_named_failure_and_does_not_poison_the_cach
     assert result.entry is not None
     assert result.entry.reply_id == 'tt-praise-001'
     assert client.call_count == 2
+
+
+# --- The floor binds the entries that can post, not the escalation gates (D7) --
+
+
+def _entry(**overrides) -> dict:
+    item = {
+        "reply_id": "tt-test-001",
+        "language": "ms",
+        "intent": "GREETING",
+        "status": "approved",
+        "approved_phrasings": ["salam"],
+        "matching_criteria": "a salutation",
+        "known_variants": [],
+        "minimum_match_threshold": 0.65,
+    }
+    item.update(overrides)
+    return item
+
+
+def test_the_shipped_table_still_loads_under_the_floor_rule() -> None:
+    # The record carries 0.90 / 0.65 / 0.20 today. The 0.20 is `tt-join-001`, an
+    # escalate entry, which the floor does not bind -- so the whole table loads.
+    table = load_reply_table()
+    assert table.by_reply_id("tt-join-001").minimum_match_threshold == 0.20
+    assert table.by_reply_id("tt-donate-001").minimum_match_threshold == 0.90
+    assert table.by_reply_id("tt-greet-001").minimum_match_threshold == 0.65
+
+
+def test_an_approved_entry_below_the_floor_is_refused() -> None:
+    with pytest.raises(ValueError, match="0.50") as caught:
+        _validate_entry(_entry(minimum_match_threshold=0.49))
+    assert "ADR 0019" in str(caught.value)
+    assert "ADR 0014" in str(caught.value)
+
+
+def test_an_escalate_entry_below_the_floor_is_accepted() -> None:
+    # An escalate entry holds no text; its number is the help threshold, set to
+    # catch rather than to be precise (ADR 0014), so the posting floor does not
+    # bind it.
+    _validate_entry(
+        _entry(
+            status="escalate",
+            approved_phrasings=[],
+            minimum_match_threshold=0.20,
+        )
+    )
+
+
+# --- The bars over the Router's decision (D4, D5, D6; AC 3-6) -----------------
+
+
+@dataclass
+class RouterDouble:
+    """A Router that returns whatever decision the test hands it."""
+
+    decision: object
+    call_count: int = 0
+    options: list = None
+
+    def __post_init__(self) -> None:
+        if self.options is None:
+            self.options = []
+
+    def decide(self, normalized_comment: str, options):
+        self.call_count += 1
+        self.options.append(tuple(options))
+        return self.decision
+
+
+def _match(decision, comment: str = "a comment only the Router decides"):
+    table = load_reply_table()
+    return Matcher(table, RouterDouble(decision)).match_comment(comment)
+
+
+def test_the_router_is_offered_every_entry_and_never_text() -> None:
+    table = load_reply_table()
+    client = RouterDouble(None)
+    Matcher(table, client).match_comment("a comment only the Router decides")
+    assert client.call_count == 1
+    assert client.options[0] == table.entries
+
+
+def test_a_router_that_returns_none_is_a_tail_not_silence() -> None:
+    # AC 5: an unmatched Intent is a Tail -- OUT_OF_SCOPE -- and Escalates; it
+    # never becomes silence by failing to match.
+    result = _match(None)
+    assert result.entry is None
+    assert result.outcome is Outcome.OUT_OF_SCOPE
+
+
+def test_an_answer_naming_no_option_is_the_same_tail_as_returning_none() -> None:
+    # An empty answer says what `None` says -- nothing the Router was offered
+    # fits -- so it is the Tail and not a refused bar. The two shapes are one
+    # state, and ADR 0019's sweep counts OUT_OF_SCOPE as its own class, so
+    # recording them as two different outcomes would measure one thing twice.
+    empty = _match(Decisions(confidences={}))
+    assert empty.entry is None
+    assert empty.outcome is Outcome.OUT_OF_SCOPE
+    assert empty.outcome is _match(None).outcome
+
+
+def test_an_empty_answer_beside_uncertain_is_still_uncertain() -> None:
+    # The refusal is decided first: a Router that declines to choose has not
+    # said "nothing fits", whatever it named alongside.
+    result = _match(Decisions(confidences={}, uncertain=True))
+    assert result.outcome is Outcome.UNCERTAIN
+
+
+def test_an_uncertain_decision_escalates_and_no_confidence_admits_it() -> None:
+    # AC 6: uncertain is a recorded outcome; bar 3 is not a threshold, so a high
+    # confidence on an option cannot lower it into a reply.
+    result = _match(Decisions(confidences={"tt-greet-001": 0.99}, uncertain=True))
+    assert result.entry is None
+    assert result.outcome is Outcome.UNCERTAIN
+
+
+def test_a_confidence_below_the_entries_own_threshold_is_not_eligible() -> None:
+    # AC 3: 0.60 is above a global 0.50 and below tt-doa-001's own 0.65, so the
+    # entry is not eligible and the Comment takes the unmatched path.
+    result = _match(Decisions(confidences={"tt-doa-001": 0.60}))
+    assert result.entry is None
+    assert result.outcome is Outcome.BELOW_MINIMUM_MATCH_THRESHOLD
+
+
+def test_the_bar_is_per_entry_not_one_global_number() -> None:
+    # 0.70 clears tt-greet-001's 0.65 but not tt-donate-001's 0.90: the same
+    # number is eligible for one entry and below the bar for another.
+    assert _match(Decisions(confidences={"tt-greet-001": 0.70})).outcome is Outcome.CANNED_REPLY
+    below = _match(Decisions(confidences={"tt-donate-001": 0.70}))
+    assert below.entry is None
+    assert below.outcome is Outcome.BELOW_MINIMUM_MATCH_THRESHOLD
+
+
+def test_two_eligible_entries_of_different_intents_conflict_and_the_higher_is_never_chosen() -> None:
+    # AC 4: the conservative reading (D6) -- any two eligible entries of
+    # different Intents conflict, and the higher is not picked.
+    result = _match(
+        Decisions(confidences={"tt-greet-001": 0.95, "tt-thanks-001": 0.80})
+    )
+    assert result.entry is None
+    assert result.outcome is Outcome.CONFLICTING_INTENTS
+
+
+def test_two_eligible_entries_of_the_same_intent_take_the_higher() -> None:
+    # D6: tt-doa-001 and tt-doa-002 are both DOA_BLESSING, so they are not a
+    # conflict; the higher confidence is posted.
+    result = _match(Decisions(confidences={"tt-doa-001": 0.70, "tt-doa-002": 0.90}))
+    assert result.entry is not None
+    assert result.entry.reply_id == "tt-doa-002"
+    assert result.outcome is Outcome.CANNED_REPLY
+
+
+def test_an_escalate_entry_above_its_own_threshold_escalates() -> None:
+    result = _match(Decisions(confidences={"tt-join-001": 0.30}))
+    assert result.entry is not None
+    assert result.entry.reply_id == "tt-join-001"
+    assert result.outcome is Outcome.ESCALATION_GATED_INTENT
+
+
+def test_a_reply_id_outside_the_options_is_refused() -> None:
+    with pytest.raises(KeyError, match="tt-not-offered"):
+        _match(Decisions(confidences={"tt-not-offered": 1.0}))

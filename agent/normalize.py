@@ -14,9 +14,10 @@ Two rules the corpus forced:
      quotes nothing from it.
 
 `bare_interjection` exists because 231 Comments (16%) are a religious formula and
-nothing else. They are `OUT_OF_SCOPE` -- answered with nothing -- and the test has
-to be "every word is a formula word", not "contains a formula word", or
-`alhamdulillah semoga cepat sembuh` would be swept in with bare `alhamdulillah`.
+nothing else. They are `NO_REPLY` -- answered with nothing, and never Escalated
+(ADR 0018) -- and the test has to be "every word is a formula word", not "contains
+a formula word", or `alhamdulillah semoga cepat sembuh` would be swept in with
+bare `alhamdulillah`.
 
 This module is the implementation; `tools/normalize.py` is the shim that lets the
 tools under `tools/` import it when run as scripts.
