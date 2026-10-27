@@ -1,4 +1,19 @@
-"""Read TikTok Comments from a Recorded page."""
+"""Read TikTok Comments from a Recorded page.
+
+**Unverified against the live page.** The selectors below, and `data-comment-id` as the
+identifier attribute, are this module's own invention: the pages under
+`tests/fixtures/recorded/` are synthetic and were written to match them, so the suite proves
+this reader agrees with itself and says nothing about TikTok. Ticket #2's prerequisite -- a
+page captured by hand from a logged-in Session -- was never run.
+
+`docs/research/comment-identity.md` contradicts every selector here. On the live page
+`[data-e2e^="comment-level"]` matches **no node at all** (`comment-level: 0`) where
+`[class*="DivCommentItem"]` matches every Comment; `data-e2e="comment-level-1"` is the
+Comment *text span* rather than a container; and the `cid` comes from the page's own
+`comment/list` response rather than from any attribute.
+
+Nothing may be built on this without issue #16. It is a shape, not a reader.
+"""
 
 from __future__ import annotations
 
