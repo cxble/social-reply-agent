@@ -326,6 +326,104 @@ def test_a_tracked_post_that_stops_loading_is_closed_without_stopping_the_pass(
     assert tracker.state("tiktok", "p-live") is PostState.TRACKED
 
 
+def test_every_readable_post_failing_to_load_is_a_dead_session_not_a_total_close(
+    store, tracker, tmp_path
+):
+    for post in ("p-one", "p-two"):
+        tracker.notice("tiktok", post, when=NOW - timedelta(days=30))
+        tracker.track("tiktok", post, when=NOW - timedelta(days=30))
+    reader = ReaderDouble(
+        {
+            Path("gone-one.html"): PostPageUnavailable("the first Post is gone"),
+            Path("gone-two.html"): FileNotFoundError("the second Post is missing"),
+        }
+    )
+    pass_ = _pass(store, tracker, tmp_path, reader=reader)
+
+    with pytest.raises(SessionDead):
+        pass_.run(
+            [
+                PostPage(
+                    post="p-one",
+                    path=Path("gone-one.html"),
+                    created_at=NOW - timedelta(days=30),
+                ),
+                PostPage(
+                    post="p-two",
+                    path=Path("gone-two.html"),
+                    created_at=NOW - timedelta(days=30),
+                ),
+            ]
+        )
+
+    marker = json.loads((tmp_path / "acct.session-dead.json").read_text())
+    assert marker["failure"] == "all_posts_unavailable"
+    assert marker["failed_posts"] == ["p-one", "p-two"]
+    assert marker["attempted_posts"] == 2
+    assert marker["total_failure"] is True
+    assert "all 2 readable Posts failed to load" in marker["detail"]
+    assert tracker.state("tiktok", "p-one") is PostState.TRACKED
+    assert tracker.state("tiktok", "p-two") is PostState.TRACKED
+
+
+def test_some_posts_load_and_reads_finish_before_missing_posts_are_closed(
+    store, tracker, tmp_path
+):
+    tracker.notice("tiktok", "p-gone", when=NOW - timedelta(days=30))
+    tracker.track("tiktok", "p-gone", when=NOW - timedelta(days=30))
+
+    class ObservingReader:
+        def __init__(self):
+            self.paths = []
+
+        def read_comments(self, path):
+            self.paths.append(Path(path))
+            if Path(path) == Path("gone.html"):
+                raise PostPageUnavailable("the Post is no longer available")
+            assert tracker.state("tiktok", "p-gone") is PostState.TRACKED
+            return _one_comment("c-live", "alhamdulillah")
+
+    reader = ObservingReader()
+    pass_ = _pass(store, tracker, tmp_path, reader=reader)
+
+    report = pass_.run(
+        [
+            PostPage(
+                post="p-gone",
+                path=Path("gone.html"),
+                created_at=NOW - timedelta(days=30),
+            ),
+            PostPage(
+                post="p-live",
+                path=Path("live.html"),
+                created_at=NOW - timedelta(hours=1),
+            ),
+        ]
+    )
+
+    assert reader.paths == [Path("gone.html"), Path("live.html")]
+    assert report.closed_posts == ("p-gone",)
+    assert [record.identity for record in report.recorded] == ["c-live"]
+    assert tracker.state("tiktok", "p-gone") is PostState.CLOSED
+    assert tracker.state("tiktok", "p-live") is PostState.TRACKED
+    assert not (tmp_path / "acct.session-dead.json").exists()
+
+
+def test_a_sweep_with_no_readable_posts_does_not_raise_or_leave_a_marker(
+    store, tracker, tmp_path
+):
+    reader = ReaderDouble({})
+    pass_ = _pass(store, tracker, tmp_path, reader=reader)
+
+    report = pass_.run([])
+
+    assert report.recorded == ()
+    assert report.closed_posts == ()
+    assert report.skipped_posts == ()
+    assert reader.paths == []
+    assert not (tmp_path / "acct.session-dead.json").exists()
+
+
 # --- The four outcomes, and the bars before the write path (ticket #6) --------
 
 

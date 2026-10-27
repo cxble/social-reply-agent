@@ -16,9 +16,13 @@ Discovery and tracking are deliberately separate (ADR 0010):
 * the durable Tracked-post record decides which Posts remain watched after they
   age out.
 
-A Tracked post whose page no longer loads is closed and the pass continues. A
-Truncated read is different: it is a dead Session, so the pass records the
-count evidence in a marker and stops before deciding any Comment.
+A Tracked post whose page no longer loads is closed and the pass continues *if
+another readable Post loaded*. If every readable Post fails to load, that is a
+dead Session rather than proof that the whole Tracked set disappeared: the pass
+records the failed Posts in a marker and stops before closing any of them. A
+Truncated read is positive evidence of the same dead Session, so it also stops
+immediately with a marker. Zero readable Posts is neither failure nor evidence
+and follows the ordinary empty-sweep path.
 
 Two things this pass is careful about, because they are the difference between a
 readable Escalation sink and an abandoned one (ADR 0014, ADR 0018):
@@ -69,7 +73,7 @@ class DryRunViolation(RuntimeError):
 
 
 class SessionDead(RuntimeError):
-    """A Truncated read stopped the Platform agent and left a marker."""
+    """A dead Session stopped the Platform agent and left a marker."""
 
     def __init__(self, marker: Path, detail: str) -> None:
         self.marker = marker
@@ -224,21 +228,60 @@ class CommentPass:
             readable.append(page)
 
         found: list[tuple[int, PostPage, object]] = []
+        unavailable: list[tuple[PostPage, Exception]] = []
         discovery_index = 0
+        reads_attempted = 0
         for page in readable:
+            reads_attempted += 1
             try:
                 post_comments = self.reader.read_comments(page.path)
             except TruncatedRead as exc:
-                marker = self._leave_dead_session_marker(page.post, exc, now)
+                read, total = _truncation_evidence(exc)
+                marker = self._leave_dead_session_marker(
+                    now=now,
+                    post=page.post,
+                    failed_posts=(page.post,),
+                    attempted_posts=reads_attempted,
+                    total_failure=False,
+                    detail=str(exc),
+                    read=read,
+                    total=total,
+                )
                 raise SessionDead(marker, str(exc)) from exc
             except (PostPageUnavailable, FileNotFoundError) as exc:
-                self.tracked_posts.close_post(self.platform, page.post, when=now)
-                closed_posts.append(page.post)
+                unavailable.append((page, exc))
                 continue
 
             for comment in post_comments.comments:
                 found.append((discovery_index, page, comment))
                 discovery_index += 1
+
+        # A failed Post is normally a Post that stopped existing (ADR 0010).
+        # When every readable Post failed, the arithmetic instead describes a
+        # dead Session: closing that whole set would silently retire exactly the
+        # Posts the agent was watching. Decide only after every read because this
+        # rule cannot be known while the loop is closing as it goes.
+        if unavailable and len(unavailable) == len(readable):
+            failed_posts = tuple(page.post for page, _ in unavailable)
+            detail = (
+                f"all {len(readable)} readable Posts failed to load: "
+                + "; ".join(
+                    f"{page.post} ({exc})" for page, exc in unavailable
+                )
+            )
+            marker = self._leave_dead_session_marker(
+                now=now,
+                post=None,
+                failed_posts=failed_posts,
+                attempted_posts=reads_attempted,
+                total_failure=True,
+                detail=detail,
+            )
+            raise SessionDead(marker, detail)
+
+        for page, _ in unavailable:
+            self.tracked_posts.close_post(self.platform, page.post, when=now)
+            closed_posts.append(page.post)
 
         found.sort(key=lambda item: _comment_sort_key(item[2], item[0]))
         recorded: list[CommentRecord] = []
@@ -306,17 +349,47 @@ class CommentPass:
         return _utc(page.created_at) >= now - self.discovery_window
 
     def _leave_dead_session_marker(
-        self, post: str, exc: TruncatedRead, now: datetime
+        self,
+        *,
+        now: datetime,
+        post: str | None,
+        failed_posts: tuple[str, ...],
+        attempted_posts: int,
+        total_failure: bool,
+        detail: str,
+        read: int | None = None,
+        total: int | None = None,
     ) -> Path:
-        read, total = _truncation_evidence(exc)
+        """Write the marker a human reads, and return its path.
+
+        Two shapes share one path and one discriminator, ``failure``:
+
+        * ``"truncated_read"`` -- a read whose count did not match its own
+          ``total`` (ADR 0006's arithmetic). ``post``, ``read`` and ``total``
+          carry that one Post's evidence, and ``failed_posts`` names it alone.
+          Truncation is positive evidence about *that* Post; any Post that had
+          already failed to load in the same sweep was left TRACKED and unclosed,
+          so nothing is lost by keeping the two failures apart instead of
+          smearing them into one list.
+        * ``"all_posts_unavailable"`` -- every readable Post failed to load, so
+          no single Post or count pair is the evidence: ``post``, ``read`` and
+          ``total`` are ``null``, ``failed_posts`` names them all, and
+          ``attempted_posts`` says how many reads were tried.
+        """
         self.dead_session_marker.parent.mkdir(parents=True, exist_ok=True)
         payload = {
             "when": _iso(now),
             "platform": self.platform,
+            "failure": (
+                "all_posts_unavailable" if total_failure else "truncated_read"
+            ),
+            "total_failure": total_failure,
+            "failed_posts": list(failed_posts),
+            "attempted_posts": attempted_posts,
             "post": post,
             "read": read,
             "total": total,
-            "detail": str(exc),
+            "detail": detail,
         }
         temporary = self.dead_session_marker.with_suffix(
             self.dead_session_marker.suffix + ".tmp"
