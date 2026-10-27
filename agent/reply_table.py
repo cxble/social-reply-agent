@@ -33,6 +33,15 @@ _REPLY_TABLE_FIELDS = (
 STATUSES = ("approved", "escalate")
 
 
+class UnknownReplyId(KeyError):
+    """A Router supplied a reply id that is not in the loaded reply table.
+
+    Defined here rather than in `matching.py` because this is where the lookup
+    that fails lives: `matching.py` imports this module, so an exception defined
+    the other way round would have to be imported inside the method body.
+    """
+
+
 @dataclass(frozen=True)
 class ReplyTableEntry:
     reply_id: str
@@ -53,7 +62,7 @@ class ReplyTable:
         for entry in self.entries:
             if entry.reply_id == reply_id:
                 return entry
-        raise KeyError(reply_id)
+        raise UnknownReplyId(reply_id)
 
 
 def reply_table_path(name: str = "tiktok") -> Path:

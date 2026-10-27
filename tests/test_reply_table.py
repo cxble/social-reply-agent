@@ -325,3 +325,68 @@ def test_doakn_and_doakan_normalize_to_the_same_form_and_hit_tt_doareq_001() -> 
     assert result.entry is not None
     assert result.entry.reply_id == 'tt-doareq-001'
     assert client.call_count == 0, 'a variant hit must not reach the Router'
+
+def test_unseen_comment_written_with_sya_and_tuk_reaches_tt_doareq_001() -> None:
+    """`sya` and `tuk` are corpus spellings in `tt-doareq-001`'s own variant, so a
+    Comment written with them must reach the entry without a Router call."""
+    table = load_reply_table()
+    client = DecisionsClientDouble(raises=True)
+    result = Matcher(table, client).match_comment(
+        'w slm sya teringin nak pergi umrah tapi tak mampu doa kan tuk sya'
+    )
+    assert result.entry is not None
+    assert result.entry.reply_id == 'tt-doareq-001'
+    assert client.call_count == 0
+    variants = {
+        normalize(v)
+        for entry in table.entries
+        for v in entry.known_variants
+        if v != 'w slm sya teringin nak pergi umrah tapi tak mampu doa kan tuk sya'
+    }
+    spellings = {normalize('w slm saya teringin nak pergi umrah tapi tak mampu doa kan untuk saya')}
+    assert result.normalized_comment in spellings, result.normalized_comment
+    assert result.normalized_comment not in variants, (
+        'the Comment matched a variant, not the new normalizer spellings'
+    )
+
+
+def test_permutations_of_an_undeclared_overlap_agree() -> None:
+    """The refusal must not depend on the order the claiming entries appear in."""
+    from itertools import permutations
+
+    def claiming(reply_id: str) -> ReplyTableEntry:
+        return ReplyTableEntry(
+            reply_id=reply_id,
+            language='en',
+            intent='PRAISE_ENCOURAGE',
+            status='approved',
+            approved_phrasings=('invented phrasing',),
+            matching_criteria='invented criteria',
+            known_variants=('invented shared variant',),
+            minimum_match_threshold=0.65,
+        )
+
+    outcomes = []
+    for order in permutations(('tt-alpha-001', 'tt-beta-001', 'tt-gamma-001')):
+        table = ReplyTable(entries=tuple(claiming(rid) for rid in order))
+        try:
+            Matcher(table, DecisionsClientDouble())
+            outcomes.append('loaded')
+        except ValueError:
+            outcomes.append('refused')
+    assert len(set(outcomes)) == 1, outcomes
+
+
+def test_router_unknown_reply_id_is_a_named_failure_and_does_not_poison_the_cache() -> None:
+    table = load_reply_table()
+    client = DecisionsClientDouble(reply_id='tt-does-not-exist')
+    matcher = Matcher(table, client)
+    with pytest.raises(KeyError, match='tt-does-not-exist'):
+        matcher.match_comment('a comment only the Router decides')
+    assert client.call_count == 1
+
+    client.reply_id = 'tt-praise-001'
+    result = matcher.match_comment('a comment only the Router decides')
+    assert result.entry is not None
+    assert result.entry.reply_id == 'tt-praise-001'
+    assert client.call_count == 2
