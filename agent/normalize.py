@@ -67,6 +67,7 @@ NORMALIZE = {
     # questions the DOA_REQUEST architecture ticket has to evaluate. The entry stays
     # as-is until that ticket decides; do not fold it here on the way past.
     "doakan": "doa kan", "doakanlah": "doa kan", "doadoakan": "doa kan",
+    "doakn": "doa kan",
     "murah rezeki": "rezeki",
     "insya allah": "insyaallah",
 }
