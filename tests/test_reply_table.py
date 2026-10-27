@@ -306,3 +306,22 @@ def test_an_undeclared_overlap_is_refused_rather_than_resolved_by_order() -> Non
     )
     with pytest.raises(ValueError, match='VARIANT_PRECEDENCE'):
         Matcher(overlapping, DecisionsClientDouble())
+
+
+def test_doakn_and_doakan_normalize_to_the_same_form_and_hit_tt_doareq_001() -> None:
+    """`doakn` is a real observed spelling carried by `tt-doareq-001`, and the
+    entry's whole reason for existing is the `tolong doa` misroute. Its two
+    spellings must fold to one canonical form so the Comment written `doakn`
+    reaches the entry the same way the Comment written `doakan` does.
+    """
+    assert normalize('tlg doakn sy') == normalize('tolong doakan saya')
+    assert normalize('doakn') == normalize('doakan')
+
+    table = load_reply_table()
+    client = DecisionsClientDouble(raises=True)
+    result = Matcher(table, client).match_comment(
+        'tolong doakn saya sahabat untuk saya dn suami dpt pergi buat umrah'
+    )
+    assert result.entry is not None
+    assert result.entry.reply_id == 'tt-doareq-001'
+    assert client.call_count == 0, 'a variant hit must not reach the Router'
