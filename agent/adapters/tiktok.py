@@ -19,16 +19,19 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from playwright.sync_api import Error, sync_playwright
 
+from agent.read_errors import PostPageUnavailable
 from agent.recorded_page import recorded_page
 
 _COMMENT_PANEL_SELECTOR = '[data-e2e="comment-level-1"]'
 _COMMENT_LIST_ITEM_SELECTOR = '[data-e2e="comment-level-1"] > *'
 _COMMENT_ID_ATTR = 'data-comment-id'
+_COMMENT_CREATED_AT_ATTR = "data-created-at"
 _COMMENT_TEXT_SELECTOR = '[data-e2e="comment-text"]'
 _TOTAL_SELECTOR = '[data-e2e="comment-count"]'
 _STATE_SCRIPT_SELECTOR = 'script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]'
@@ -36,6 +39,19 @@ _STATE_SCRIPT_SELECTOR = 'script[id="__UNIVERSAL_DATA_FOR_REHYDRATION__"]'
 
 class TruncatedRead(RuntimeError):
     """The Platform reported more or fewer Comments than were read."""
+
+    def __init__(
+        self,
+        message: str | None = None,
+        *,
+        total: int | None = None,
+        read: int | None = None,
+    ) -> None:
+        self.total = total
+        self.read = read
+        if message is None:
+            message = f"TikTok Recorded page reported total {total}, read {read}"
+        super().__init__(message)
 
 
 class SelectorRot(RuntimeError):
@@ -48,8 +64,16 @@ class UnreadableTotal(RuntimeError):
 
 @dataclass(frozen=True)
 class Comment:
+    """A Comment as the current invented page shape describes it.
+
+    ``created_at`` is optional because the synthetic corpus does not carry a
+    timestamp everywhere. A missing value is not evidence that the Comment is
+    old; callers must keep it distinct from a real creation time.
+    """
+
     identity: str
     text: str
+    created_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -67,15 +91,21 @@ class TikTokRecordedPageAdapter:
                 browser = pw.chromium.launch(headless=True)
                 page = browser.new_page()
                 try:
-                    page.goto(url, wait_until="domcontentloaded")
-                    page.wait_for_selector(_COMMENT_PANEL_SELECTOR)
-                    total = _read_total(page)
-                    comments = _read_comments(page)
-                    if len(comments) != total:
-                        raise TruncatedRead(
-                            f"TikTok Recorded page reported total {total}, read {len(comments)}"
-                        )
-                    return PostComments(comments=tuple(comments), total=total)
+                    try:
+                        page.goto(url, wait_until="domcontentloaded")
+                        page.wait_for_selector(_COMMENT_PANEL_SELECTOR)
+                        total = _read_total(page)
+                        comments = _read_comments(page)
+                        if len(comments) != total:
+                            raise TruncatedRead(
+                                total=total,
+                                read=len(comments),
+                            )
+                        return PostComments(comments=tuple(comments), total=total)
+                    except Error as exc:
+                        raise PostPageUnavailable(
+                            f"TikTok Recorded page stopped loading: {exc}"
+                        ) from exc
                 finally:
                     browser.close()
 
@@ -153,5 +183,22 @@ def _read_comments(page) -> list[Comment]:
                 f"TikTok Comment {index} text locator matched {text_locator.count()} elements"
             )
         text = (text_locator.first.text_content() or "").strip()
-        comments.append(Comment(identity=identity, text=text))
+        created_at = _parse_created_at(item.get_attribute(_COMMENT_CREATED_AT_ATTR))
+        comments.append(Comment(identity=identity, text=text, created_at=created_at))
     return comments
+
+
+def _parse_created_at(raw: str | None) -> datetime | None:
+    """Read an optional ISO 8601 timestamp without inventing one when absent."""
+    if raw is None or not raw.strip():
+        return None
+    value = raw.strip()
+    if value.endswith("Z"):
+        value = f"{value[:-1]}+00:00"
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError as exc:
+        raise SelectorRot(f"TikTok Comment creation time is unreadable: {raw!r}") from exc
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)

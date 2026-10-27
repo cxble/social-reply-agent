@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -32,6 +33,23 @@ def test_every_comment_carries_its_identifier():
 
     assert [comment.identity for comment in result.comments] == ["c-100", "c-101", "c-102"]
     assert all(comment.identity for comment in result.comments)
+
+
+def test_every_comment_carries_its_creation_time_when_the_shape_has_one():
+    result = TikTokRecordedPageAdapter().read_comments(fixture_path("tiktok_pass.html"))
+
+    comment = next(comment for comment in result.comments if comment.identity == "c-old")
+    assert comment.created_at == datetime(
+        2026, 10, 20, 10, 0, tzinfo=timezone.utc
+    )
+    assert comment.created_at.tzinfo is timezone.utc
+
+
+def test_a_missing_creation_time_is_none_not_a_guessed_time():
+    result = TikTokRecordedPageAdapter().read_comments(fixture_path("tiktok_pass.html"))
+
+    comment = next(comment for comment in result.comments if comment.identity == "c-missing")
+    assert comment.created_at is None
 
 
 @pytest.mark.parametrize(
