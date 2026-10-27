@@ -19,6 +19,26 @@ Discovery and tracking are deliberately separate (ADR 0010):
 A Tracked post whose page no longer loads is closed and the pass continues. A
 Truncated read is different: it is a dead Session, so the pass records the
 count evidence in a marker and stops before deciding any Comment.
+
+Two things this pass is careful about, because they are the difference between a
+readable Escalation sink and an abandoned one (ADR 0014, ADR 0018):
+
+* **The No-reply test runs first** (``agent.no_reply``), before the Router is
+  consulted, so the 61.1% of the corpus that presents nothing addressed to the
+  organisation costs no Router call and is recorded ``NO_REPLY`` -- never
+  Escalated. Confidence cannot override it; the test is structural (ADR 0019).
+* **Every escalating Outcome goes through the D1 partition** (``record.escalates``),
+  not a hand-written membership test. That is what fixes the gap where a Tail
+  (``OUT_OF_SCOPE``) and a below-threshold reading posted nothing *and* Escalated
+  nothing; now the Tail, a refused bar, a conflict, an unsure reading, an
+  escalation-gated Intent and an unconfirmed identifier all reach the sink.
+
+**The risk this leaves, stated rather than glossed:** the sink's readability now
+rests entirely on the No-reply test being good. A structural test that *leaks*
+-- one that fails to recognise a No-reply shape -- turns the 1.8% Tail into a sink
+carrying up to 61.1% of the corpus, which is exactly how the human stops reading.
+The test is therefore built to err toward ``None`` (reach the Router) rather than
+toward swallowing a plea, and the direction of every ambiguity is deliberate.
 """
 
 from __future__ import annotations
@@ -33,8 +53,9 @@ from typing import Collection, Iterable, Protocol
 
 from agent.adapters.tiktok import PostComments, TruncatedRead
 from agent.matching import DecisionsClient, Matcher
+from agent.no_reply import no_reply_reason
 from agent.read_errors import PostPageUnavailable
-from agent.record import CommentRecord, CommentStore, Outcome
+from agent.record import CommentRecord, CommentStore, Outcome, escalates
 from agent.reply_table import ReplyTable
 from agent.tracked_posts import PostState, TrackedPostStore
 
@@ -235,17 +256,17 @@ class CommentPass:
                 skipped_replied.append(comment.identity)
                 continue
 
-            match = self.matcher.match_comment(comment.text)
-            entry = match.entry
-            if entry is None:
-                outcome = Outcome.OUT_OF_SCOPE
-                detail = "no Canned reply covers the Comment"
-            elif entry.status == "escalate":
-                outcome = Outcome.ESCALATION_GATED_INTENT
-                detail = f"{entry.intent} via {entry.reply_id}"
+            # The structural No-reply test runs before the Router (ADR 0018):
+            # a Comment that presents nothing addressed to the organisation gets
+            # nothing, at any confidence, and is never Escalated.
+            reason = no_reply_reason(comment.text)
+            if reason is not None:
+                outcome = Outcome.NO_REPLY
+                detail = reason.value
             else:
-                outcome = Outcome.CANNED_REPLY
-                detail = entry.reply_id
+                match = self.matcher.match_comment(comment.text)
+                outcome = match.outcome
+                detail = match.detail
 
             record = CommentRecord(
                 platform=self.platform,
@@ -257,7 +278,7 @@ class CommentPass:
             self.store.record(record)
             recorded.append(record)
 
-            if outcome is Outcome.ESCALATION_GATED_INTENT:
+            if escalates(outcome):
                 escalations.append(record)
                 self.escalations.append(
                     when=now,

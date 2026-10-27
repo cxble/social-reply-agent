@@ -97,3 +97,26 @@ def _validate_entry(item: dict[str, Any]) -> None:
         raise ValueError(f"unknown status {item['status']!r} in {item['reply_id']!r}")
     if item["status"] == "escalate" and item["approved_phrasings"]:
         raise ValueError(f"escalation-only entry {item['reply_id']!r} carries postable text")
+    # D7 -- the 0.50 Floor governs *posting*, so it binds exactly the entries that
+    # can post. ADR 0019's floor row says "every entry, any tier" while the same
+    # ADR's escalation-gate tier sets 0.20, and `tt-join-001` sits at 0.20 today.
+    # Both cannot hold literally; they are resolved on the floor's own reason,
+    # which is a posting failure: below 0.50 "an entry is eligible on a reading
+    # the Router itself thinks likelier wrong than right, and with 61.1% of the
+    # corpus needing no reply that is exactly how a non-sequitur gets posted". An
+    # `escalate` entry holds no text at all (ADR 0014: there is no text the agent
+    # is permitted to post) and its number is the deliberately lower help
+    # threshold, set to catch rather than to be precise -- so the floor does not
+    # bind it. This is the one place where the two ADRs cannot both be read
+    # literally, and the resolution is a decision, not a detail.
+    if item["status"] == "approved" and float(item["minimum_match_threshold"]) < 0.50:
+        raise ValueError(
+            f"approved entry {item['reply_id']!r} sits at "
+            f"minimum_match_threshold={item['minimum_match_threshold']!r}, below the "
+            "0.50 floor. ADR 0019 sets the floor because below it an entry is eligible "
+            "on a reading the Router thinks likelier wrong than right, and with 61.1% "
+            "of the corpus needing no reply that is how a non-sequitur gets posted -- a "
+            "posting failure. The floor governs posting, so it does not bind an "
+            "`escalate` entry, which holds no text and sits at the deliberately lower "
+            "help threshold (ADR 0014)."
+        )

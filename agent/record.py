@@ -65,6 +65,49 @@ class Outcome(Enum):
     ESCALATION_GATED_INTENT = "escalation-gated intent"
 
 
+# D1 -- every Outcome gets an escalation verdict, and the partition is total.
+#
+# The two sets below are the whole decision of who is shown a Comment, split by
+# outcome rather than by a rule buried in the pass. The point is that they must
+# stay a *partition*: `test_outcome_partition_is_total_and_disjoint` asserts they
+# are disjoint and that their union is exactly `set(Outcome)`, so adding a ninth
+# Outcome fails the suite until someone decides, in writing, whether a human sees
+# it. A default -- "new outcomes are silent" or "new outcomes escalate" -- would
+# let an outcome go silent by omission, which is the failure ADR 0018 spends its
+# length forbidding. Deciding per outcome is the only shape that forces the
+# question to be asked.
+#
+# Escalating means a human is shown the Comment: the Tail (OUT_OF_SCOPE), a bar
+# that refused it, an unsure or conflicting reading, an escalation-gated Intent,
+# and an identifier that could not be confirmed at write time. Not escalating
+# means nobody is: a posted Canned reply is its own record, and NO_REPLY is the
+# 61.1% the design is *working* on -- showing those to a human is how the sink
+# stops being read (ADR 0014, ADR 0018).
+ESCALATING_OUTCOMES = frozenset(
+    {
+        Outcome.OUT_OF_SCOPE,
+        Outcome.BELOW_MINIMUM_MATCH_THRESHOLD,
+        Outcome.CONFLICTING_INTENTS,
+        Outcome.UNCERTAIN,
+        Outcome.ESCALATION_GATED_INTENT,
+        Outcome.UNCONFIRMED_IDENTIFIER,
+    }
+)
+
+NON_ESCALATING_OUTCOMES = frozenset({Outcome.CANNED_REPLY, Outcome.NO_REPLY})
+
+
+def escalates(outcome: Outcome) -> bool:
+    """Whether a human is shown this Outcome.
+
+    The single home of the D1 verdict: the pass appends to the Escalation sink
+    through this rather than through a hand-written membership test, so that
+    UNCERTAIN, CONFLICTING_INTENTS and BELOW_MINIMUM_MATCH_THRESHOLD reach the
+    sink the moment they are given an outcome here.
+    """
+    return outcome in ESCALATING_OUTCOMES
+
+
 class ReplyStatus(Enum):
     """What the page shows about whether a Comment has been answered.
 
