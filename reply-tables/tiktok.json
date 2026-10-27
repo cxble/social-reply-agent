@@ -1,0 +1,278 @@
+[
+  {
+    "reply_id": "tt-doa-001",
+    "language": "ms",
+    "intent": "DOA_BLESSING",
+    "status": "approved",
+    "approved_phrasings": [
+      "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan.",
+      "Aamiin. Terima kasih atas doanya, semoga Allah permudahkan urusan tuan/puan.",
+      "Aamiin ya Allah. Moga segala urusan tuan/puan dipermudahkan.",
+      "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan, dunia dan akhirat."
+    ],
+    "matching_criteria": "a prayer or blessing with no request in it",
+    "known_variants": [
+      "semoga cepat sembuh",
+      "semoga cpt sembuh kami semua doa aamiin",
+      "semoga cepat sembuh insyaallah aamiin",
+      "semoga cepat sembuh aameen²",
+      "smg cepat sembuh ibu dan ayah nya smg allah sembuhkan segala penyakit nya dan sehat selalu",
+      "semoga dipermudahkan",
+      "semoga di permudahkan segala urusan",
+      "semoga dipermudahkan segala urusan",
+      "aamiin ya allah",
+      "semoga allah permudahkan urusan",
+      "alhamdulillah utk saudara baru moga Allah memberi cahaya kepada hambanya aminnn3 yralamin",
+      "Alhandullillah. Semoga Allah melimpahi rahmat keatas Gary.",
+      "alhamdulllah semuga dipermudahkan segala urusan",
+      "Moga dipemudahkan urusan gary n bro ben",
+      "semoga Allah melimpahkan rahmat kepada anda dan gary",
+      "semuga dpermudahkan",
+      "dipermudahkan urusan",
+      "semuga allah mudahkan urusan hashimah",
+      "semuga dmurahkan rezeki hasimah untuk menjaga ibu bapa",
+      "smuga diprmudahkn allah sgl urusan mreka",
+      "ya allah dipermudahkan segala urusan dan diberi kesihatan yang baik",
+      "semugo allahpermudah segala usannya",
+      "Semoga urusan pakcik ni dipermudahkan Allah Swt..."
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-doa-002",
+    "language": "en",
+    "intent": "DOA_BLESSING",
+    "status": "approved",
+    "approved_phrasings": [
+      "Aamiin. Thank you for your doa.",
+      "Aamiin. Thank you for the doa, we really appreciate it.",
+      "Aamiin. Jazakallahu khairan for your doa.",
+      "Aamiin. Thank you, and may Allah make things easy for you too."
+    ],
+    "matching_criteria": "a prayer or blessing written in English or mixed English-Malay, with no request in it",
+    "known_variants": [
+      "Alhamdulillah, Bro Ben ,all the praise to our Almighty Alloh. keep it up till ur last breath. Aamieen.",
+      "terbaik bro Ben. Keep it up till it last breath. Amieen Ya Alloh.",
+      "Bro Ben. With your good and kind hearted, may Allah bless you bro Ben.",
+      "to be honestly you are the best. Tkasih ya Allah Aamiinn.",
+      "i appreciate what you are doing..ben. i.pray for yr good health..aamiin",
+      "Jazakallah Khairan Kathira semoga Allah permudahkan segala urusan dunia dan akhiratnya pada saudara 2saudari 2 semua amin ya Allah amin ya Rabbal Alam",
+      "good job. semuga dipermudahkan segala urusan Perubatan Dan kembali sihat",
+      "terima kasih sahabat dengan perhatian sahabat thanks for your kindness semoga di permudahkan segala urusan dan..."
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-praise-001",
+    "language": "ms",
+    "intent": "PRAISE_ENCOURAGE",
+    "status": "approved",
+    "approved_phrasings": [
+      "Terima kasih. Semoga Allah membalas budi baik tuan/puan.",
+      "Terima kasih banyak. Semoga Allah membalas kebaikan tuan/puan.",
+      "Terima kasih atas sokongan. Moga Allah balas jasa baik tuan/puan.",
+      "Terima kasih. Semoga Allah membalas budi baik tuan/puan dengan yang lebih baik."
+    ],
+    "matching_criteria": "praise or encouragement with no request and no explicit doa",
+    "known_variants": [
+      "terbaik",
+      "terbaikk",
+      "terbaik bro ben",
+      "abg terbaikk",
+      "tuann terbaik",
+      "terbaik adik",
+      "terbaik bro bo",
+      "terbaik sahabat rezeki tu",
+      "mantap",
+      "alhamdulillah terbaik",
+      "alhamduliillah terbaik bro ben",
+      "alhamdulillah bro ben terbaik",
+      "alhamdulillah terbaik saudara islam ku terus istiqamah",
+      "kerja yang mulia teruskan perjuangan anda",
+      "teruskan ben",
+      "hebat perjalanan hidup tuan",
+      "good job semuga dipermudahkan segala urusan perubatan dan kembali sihat",
+      "subhanallah dpt ibadat dlm raudah yang terbaik",
+      "terbaik bro ben keep it up till it last breath amieen ya alloh",
+      "betul abang baik keren",
+      "الحمدالله!! تروسكن اسها مورني"
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-greet-001",
+    "language": "ms",
+    "intent": "GREETING",
+    "status": "approved",
+    "approved_phrasings": [
+      "Waalaikumussalam warahmatullahi wabarakatuh.",
+      "Waalaikumussalam."
+    ],
+    "matching_criteria": "a salutation carrying no other content",
+    "known_variants": [
+      "salam",
+      "salam wbt",
+      "waalaikum salam",
+      "walaikumsalam",
+      "salam alhamdulillah",
+      "waalaikumusalam",
+      "salam wbt alhamdulillah",
+      "waalaikummussalam",
+      "salam selamat pagi",
+      "walaikumusalam",
+      "waalaikumusalam alhamdulillah",
+      "walaikumusalam alhamdulillah",
+      "waalaikummusalam",
+      "waalaikummussalam warahmatullahiwabarokatuh",
+      "assalamualaikum sahabat lama",
+      "ASSALAMUALAIKUM",
+      "Assalammualakum",
+      "assalamulaikum",
+      "asllm allkm",
+      "wslm",
+      "wassalam",
+      "salam wrbt",
+      "salam takziah",
+      "salam tuan",
+      "a.mualaikum bro.terbaik",
+      "ben bagi salam terbaik",
+      "asalamualaikom syukur saudara dapat menarik untuk saudara kita bukan islam syukur dapat"
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-doareq-001",
+    "language": "ms",
+    "intent": "DOA_REQUEST",
+    "status": "approved",
+    "approved_phrasings": [
+      "Aamiin, semoga Allah makbulkan hajat tuan/puan.",
+      "Aamiin. Moga Allah makbulkan hajat tuan/puan.",
+      "Aamiin ya Allah, semoga hajat tuan/puan dimakbulkan.",
+      "Aamiin, semoga Allah perkenankan hajat tuan/puan."
+    ],
+    "matching_criteria": "the commenter asking to be prayed for — a request whose object is the commenter's own wish, not the organisation's help",
+    "known_variants": [
+      "Tolong DOAKAN saya jgk utk ke sana 😭😭😭",
+      "tolong doa saya jgk untuk ke sana",
+      "tolong doakn saya sahabat untuk saya dn suami dpt pergi buat umrah",
+      "salam shbt tolong doa saya dpt rezeki untuk mengerjakan umrah ye",
+      "doa kan saya semoga dapat menunaikan haji",
+      "w slm sya teringin nak pergi umrah tapi tak mampu doa kan tuk sya",
+      "Doakan sy dan keluarga juga dpat menunaikan haji dan Umrah satu hari nnti",
+      "Doakan saya , semoga Allah izinkan saya ziarah ke tanah suci juga.. Saya teringin sangat moga dijemput kesana.",
+      "Doakan juga saya dan suami menjadi tetamu Allah",
+      "Semoga saya juga berpeluang menjadi tetamu Allah",
+      "moga saya d jemput ke sana..🤲🤲",
+      "doakan sy Kaya raya utk Bantu org lain🙏🏻",
+      "Ninie Salim: ya Allah.. semoga saya pun dapat pergi juga nanti🤲🏻"
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-thanks-001",
+    "language": "ms",
+    "intent": "BENEFICIARY_THANKS",
+    "status": "approved",
+    "approved_phrasings": [
+      "Alhamdulillah. Terima kasih kembali.",
+      "Alhamdulillah. Sama-sama, terima kasih kembali.",
+      "Alhamdulillah, terima kasih. Moga Allah permudahkan urusan tuan/puan.",
+      "Alhamdulillah. Terima kasih kembali, semoga Allah memberkati tuan/puan."
+    ],
+    "matching_criteria": "thanks from someone the organisation has already helped",
+    "known_variants": [
+      "terima kasih orang baik",
+      "trima kaseh orang baik",
+      "terima kasih jadi orang baikkk",
+      "terima kasih bro ben",
+      "terima kasih bro ben ooi orang baikk mudah2an semuga allah mpermudahkan urusan",
+      "alhamdulillah terima kasih bro ben",
+      "terima kasih ben alhandulillah",
+      "alhamdulillah terima kasih atas keperihatinan",
+      "terima kasih",
+      "syukur alhamdulilah terima kasih datang melawat ayah saya Dan bantuan pampers semoga Allah permudahkan semua urusan",
+      "alhamdulillah terima kasih bro ben atas lawatan kak farina semoga rezeki dan diberkati allah",
+      "Alhamdulillah Terbaik En.Ben Oi tolong Keluarga dlm kesusahan",
+      "syukur Alhamdulilah,terima kasih Bro Ben Ooi",
+      "Alhamdulillah bro ben dan terima kasih kerana membantu insan insan yg memerlukan bantuan.",
+      "Intan kaseh: Tkaseh tuan srmoga abg sehat hendak nya",
+      "walaikkum salam sahabat yang sopptive terima kasih",
+      "macam saya dulu ayah tak boleh berjalan sekarang kenangan yang saya rindu terima kasih allah",
+      "tweu_313 terima kasih ben memudahkan orang dlm susah"
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-convert-001",
+    "language": "ms",
+    "intent": "CONVERT_CONGRATS",
+    "status": "approved",
+    "approved_phrasings": [
+      "Alhamdulillah. Semoga Allah kekalkan tuan/puan dalam hidayah-Nya.",
+      "Alhamdulillah, tahniah. Moga Allah kekalkan tuan/puan dalam hidayah-Nya.",
+      "Alhamdulillah. Semoga Allah tetapkan tuan/puan dalam hidayah-Nya.",
+      "Alhamdulillah, syukur. Moga Allah kekalkan tuan/puan dalam hidayah-Nya."
+    ],
+    "matching_criteria": "congratulating or blessing someone on embracing Islam; eligible only on a conversion Post",
+    "known_variants": [
+      "ahlan wa sahlan ilal islam.",
+      "waalaikumussalam wbt terima kasih syukur Alhamdulillaah selamat masuk Islam senyum ceria ye semoga kekal sampai akhir hayat",
+      "walaikumsallam sodara semualaf alhamdulillah allah permudahkan",
+      "Alhamdulillah. bertuahnya. Kembali kpd fitrah",
+      "Alhamdulillah... Semoga En Gary terus istiqamah dgn Islam hingga ke jannah.. Aamiinn, semoga mereka yang kembali ke agama fitrah terus mndpt bimbingan yg sewajarnya.. Aamiinn",
+      "Alhamdulillah ugama yang fitrah 🥰🥰🥰🥰🥰🥰🥰"
+    ],
+    "minimum_match_threshold": 0.65
+  },
+  {
+    "reply_id": "tt-join-001",
+    "language": "ms",
+    "intent": "JOIN_ENQUIRY",
+    "status": "escalate",
+    "approved_phrasings": [],
+    "matching_criteria": "a commenter asking to join, participate in, or become part of the organisation's work",
+    "known_variants": [
+      "Sy nk join pertubuhan ni boleh tak 😁",
+      "Saya nak join bleh x",
+      "saya nak sertai bleh tak",
+      "saya nak sertai pertubuhan ni boleh tak",
+      "assalammualaikum boleh ke sekiranya saya nak sertai pertubuhan kebajikan modal insan pada siapa...",
+      "Mr khai: kepala batas pulau pinang"
+    ],
+    "minimum_match_threshold": 0.2
+  },
+  {
+    "reply_id": "tt-donate-001",
+    "language": "ms",
+    "intent": "DONATION_ENQUIRY",
+    "status": "approved",
+    "approved_phrasings": [
+      "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+      "Alhamdulillah. Terima kasih kerana support. Sumbangan boleh disalurkan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+      "Alhamdulillah, terima kasih atas sokongan. Boleh salurkan sumbangan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang"
+    ],
+    "matching_criteria": "a Comment asking how to contribute, give, or send money",
+    "known_variants": [
+      "bagaimana kalau kita nak sumbang",
+      "bagaimana kalo kita nak menyumbang",
+      "Assalammualakum Tuan nk tanya mcm mna klu kita nk buat Sumbangan ikhlas",
+      "tolong bagi account no persatuan walaupun sikit saya nak bantu insyaa allah"
+    ],
+    "minimum_match_threshold": 0.9
+  },
+  {
+    "reply_id": "tt-zakat-001",
+    "language": "ms",
+    "intent": "ZAKAT_SEDEKAH_ENQUIRY",
+    "status": "approved",
+    "approved_phrasings": [
+      "Alhamdulillah. Terima kasih kerana support.\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+      "Alhamdulillah. Terima kasih kerana support. Sumbangan boleh disalurkan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang",
+      "Alhamdulillah, terima kasih atas sokongan. Boleh salurkan sumbangan ke akaun berikut:\n\nMaybank\n5570 9082 5174\nPertubuhan Kebajikan dan Pembangunan Insan Pulau Pinang"
+    ],
+    "matching_criteria": "a Comment that names zakat, sedekah or infaq and asks how to pay it",
+    "known_variants": [],
+    "minimum_match_threshold": 0.9
+  }
+]
