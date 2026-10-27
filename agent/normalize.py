@@ -6,8 +6,10 @@ form, so that `semuga`, `smoga`, `smg` and `moga` are one thing to match on.
 
 Two rules the corpus forced:
 
-  1. Collapse 3+ repeats before the dictionary runs, so `bagusss` -> `baguss` and
-     `aaminnn` -> `aaminn` rather than needing an entry per spelling.
+  1. Collapse any run of 3+ repeats down to 2 before the dictionary runs, so
+     `bagusss` -> `baguss` and `aaminnn` -> `aaminn`. This bounds the run; it does
+     not fold an elongated form to its base (`baguss` is not `bagus`). Spellings
+     that must reach an entry have to be carried by it.
   2. Never touch the Comment as stored. Normalization is derived, and the Reply
      quotes nothing from it.
 
@@ -30,10 +32,12 @@ NORMALIZE = {
     "x": "tak", "takde": "tak ada", "takdak": "tak ada",
     "nk": "nak", "nok": "nak", "na": "nak",
     "sy": "saya", "aku": "saya", "aq": "saya", "sye": "saya",
+    "sya": "saya",
     "yg": "yang", "utk": "untuk", "untk": "untuk",
+    "tuk": "untuk",
     "dgn": "dengan", "dgan": "dengan",
     "klu": "kalau", "kalo": "kalau", "kalu": "kalau",
-    "mcm": "macam", "mcm2": "macam-macam", "cmne": "macam mana", "mcmne": "macam mana",
+    "mcm": "macam", "mcm2": "macam macam", "cmne": "macam mana", "mcmne": "macam mana",
     "mcmana": "macam mana", "mcm mana": "macam mana",
     "bgtau": "beritahu", "bg": "bagi", "lg": "lagi", "skrg": "sekarang",
     "tq": "terima kasih", "ty": "terima kasih", "tqq": "terima kasih",

@@ -315,3 +315,20 @@ def test_no_bare_formula_survives_as_a_variant(record_entries) -> None:
                 f"{reply_id}: a bare formula would be recognised and replied to:\n"
                 f"{item['text']!r} (normalizes to {normalize(item['text'])!r})"
             )
+
+
+def test_matching_criteria_matches_the_record_and_verbatim_lines(record_entries, table_entries):
+    """`matching_criteria` is the definition text the Router is given; the record
+    carries it, its source, and the document line it was read from, so compare all."""
+    for reply_id, recorded in record_entries.items():
+        assert table_entries[reply_id].matching_criteria == recorded["matching_criteria"], reply_id
+        if recorded.get("matching_criteria_source") == "verbatim":
+            def compact(text: str) -> str:
+                return "".join(text.split()).replace("**", "")
+            for number in recorded["matching_criteria_doc_lines"]:
+                # The document wraps a single criteria value across lines, so the
+                # cited line and its continuation are compared without whitespace.
+                window = "".join(DOCUMENT_LINES[number - 1 : number + 1])
+                assert compact(recorded["matching_criteria"]) in compact(window), (
+                    f"{reply_id}: recorded criteria not found on cited document line {number}"
+                )
