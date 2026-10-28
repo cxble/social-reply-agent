@@ -53,6 +53,15 @@ is recorded as :data:`agent.record.Outcome.UNKNOWN_OUTCOME` -- the glossary's
 "Unknown outcome", whose result is neither posted nor not-posted -- and Escalated
 loudly. It is settled later by Reconciliation, never by retrying.
 
+**What is written is a :class:`agent.rotation.Phrasing`, not a bare string.** ADR
+0002's "the Router structurally cannot invent a Reply" rested on whoever called
+``write_reply``, because the parameter was a bare ``str`` anyone could compose.
+The parameter is now the value the Phrasing deck hands out -- set, entry and text
+came from somewhere a Reviewer can name -- so the shape is right and the call site
+auditable. It does not make invention impossible: a caller can still build a
+``Phrasing`` by hand. The type narrows the honest path, and no impossibility is
+claimed. The deck itself is not wired in here (that is Graduation, #14).
+
 See `docs/reply-routing.md` step 6, ADR 0007 and ADR 0019.
 """
 
@@ -69,6 +78,7 @@ from agent.record import (
     Outcome,
     ReplyStatus,
 )
+from agent.rotation import Phrasing
 
 __all__ = (
     "CommentWriter",
@@ -207,7 +217,7 @@ class CommentWriter:
         self.escalations = escalations
         self._now = now or (lambda: datetime.now(timezone.utc))
 
-    def write_reply(self, comment: HeldComment, reply_text: str) -> WriteResult:
+    def write_reply(self, comment: HeldComment, phrasing: Phrasing) -> WriteResult:
         # Two questions, and neither of them is "is there a row?". The pass records
         # a Verdict for every Comment it decides -- CANNED_REPLY included, because
         # the record is the decision and outcomes are insert-only -- so by the time
@@ -273,7 +283,7 @@ class CommentWriter:
         # holds -- nothing can have posted -- so a failure that is not the page's
         # declared IdentifierUnreadable propagates (the guard above).
         try:
-            self.page.submit_reply(comment, reply_text)
+            self.page.submit_reply(comment, phrasing.text)
             confirmation = self.page.read_confirmation(comment)
         except Exception as exc:
             return self._escalate(
@@ -282,6 +292,7 @@ class CommentWriter:
                 "the submit or the read-back raised, so whether it posted is "
                 f"unknown: {exc!r}",
                 submitted=True,
+                phrasing=phrasing,
             )
         if not self._confirms(confirmation, comment.identity):
             # A submitted write whose Confirmation does not read back is neither
@@ -293,6 +304,7 @@ class CommentWriter:
                 "submitted but not confirmed against "
                 f"{comment.identity!r}: {_describe(confirmation, self.account)}",
                 submitted=True,
+                phrasing=phrasing,
             )
 
         if prior is None:
@@ -343,6 +355,7 @@ class CommentWriter:
         detail: str,
         *,
         submitted: bool = False,
+        phrasing: Phrasing | None = None,
     ) -> WriteResult:
         # Only escalating outcomes reach here; the partition in agent.record keeps
         # that honest, so the append is unconditional. The append is the part a
@@ -352,6 +365,20 @@ class CommentWriter:
         # things on purpose -- the record holds what was decided, the sink holds
         # why the write was refused -- which is why a row whose Verdict is
         # non-escalating can still have a sink entry beside it.
+        #
+        # `phrasing` is passed by the two refusals that follow a submit, and only
+        # by them. Those are the entries a human reconciles a possible
+        # double-post from -- ADR 0019's "largest correctness risk in this
+        # project" -- and they cannot be reconciled without knowing which words
+        # may already be on the page. A refusal *before* the submit names no
+        # Reply, because nothing can have posted: the asymmetry is the fact, not
+        # an oversight.
+        if phrasing is not None:
+            detail = (
+                f"{detail}; the Reply it may have posted is "
+                f"{phrasing.reply_id!r} from the {phrasing.set_id!r} set: "
+                f"{phrasing.text!r}"
+            )
         try:
             self.store.get(comment.platform, comment.identity)
         except CommentNotFound:
