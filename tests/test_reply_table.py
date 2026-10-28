@@ -110,7 +110,7 @@ def test_settled_tier_values_are_as_the_document_assigns_them() -> None:
     for intent in {'DONATION_ENQUIRY', 'ZAKAT_SEDEKAH_ENQUIRY'}:
         assert by_intent[intent] == 0.9
     for intent in {'DOA_BLESSING', 'DOA_REQUEST', 'GREETING', 'PRAISE_ENCOURAGE', 'BENEFICIARY_THANKS', 'CONVERT_CONGRATS'}:
-        assert by_intent[intent] == 0.65
+        assert by_intent[intent] == 0.80
     assert by_intent['JOIN_ENQUIRY'] == 0.2
 
 
@@ -118,13 +118,13 @@ def test_the_adr_names_exactly_the_entries_its_tiers_bind() -> None:
     """The tier numbers are a claim about the ADR, so the ADR has to agree with them.
 
     This is the drift that produced the `DOA_REQUEST` item: the ADR's Acknowledgement
-    row simply omitted the entry, so 0.65 had no architectural basis in the one place
+    row simply omitted the entry, so its number had no architectural basis in the one place
     the tiers are justified. `HELP_REQUEST` is absent from the table by design -- it is
     an Escalation gate with no entry to hold a threshold -- so the gates are compared
     against the ADR only for the Intents the table actually carries.
     """
     table = load_reply_table()
-    for tier, threshold in (("Acknowledgement", 0.65), ("Consequential", 0.9)):
+    for tier, threshold in (("Acknowledgement", 0.80), ("Consequential", 0.9)):
         carried = {
             entry.intent for entry in table.entries if entry.minimum_match_threshold == threshold
         }
@@ -140,29 +140,26 @@ def test_the_adr_names_exactly_the_entries_its_tiers_bind() -> None:
     assert carried_gates <= gates, 'an entry sits at the help threshold that the ADR does not name'
 
 
-def test_doa_request_is_an_acknowledgement_and_its_number_is_uncalibrated() -> None:
-    """`DOA_REQUEST` is in the Acknowledgement tier; the *number* is not yet calibrated.
+def test_doa_request_is_an_acknowledgement_at_the_tier_number() -> None:
+    """`DOA_REQUEST` is in the Acknowledgement tier and carries the tier's number.
 
     The document sets the tiers by what a wrong Reply costs and gives the
-    acknowledgement classes 0.65, which is where this entry belongs: its rows post a
-    canned acknowledgement that "promises no action beyond the doa itself". What is
-    not settled is the calibration -- the document says once, for the whole table,
-    that the numbers are provisional because they are claims about a Router that does
-    not exist in this repository. The tier and the uncertainty are recorded in
-    different places on purpose: the tier binds the entry, the uncertainty covers all
-    ten numbers at once, and repeating it per entry would restate a single sentence
-    ten times.
+    acknowledgement classes 0.80 -- revised from 0.65 by the measurement (ADR 0019),
+    which is where this entry belongs: its rows post a canned acknowledgement that
+    "promises no action beyond the doa itself". The tier binds the entry; the
+    table-wide calibration status lives once in the approval record, not per entry,
+    because the document states it once for the whole table.
     """
     table = load_reply_table()
     entry = next(e for e in table.entries if e.intent == 'DOA_REQUEST')
-    assert entry.minimum_match_threshold == 0.65, 'the acknowledgement tier is 0.65'
+    assert entry.minimum_match_threshold == 0.80, 'the acknowledgement tier is 0.80'
     assert entry.status == 'approved'
 
     record = json.loads(RECORD_PATH.read_text())
-    assert record['threshold_status'] == 'provisional'
+    assert record['threshold_status'] == 'measured'
     assert record['threshold_status_doc_lines'] == [961]
-    assert 'provisional' in _document_line(961), (
-        'the record cites a line that no longer says the numbers are provisional'
+    assert 'measured' in _document_line(961).lower(), (
+        'the record cites a line that no longer says the numbers were measured'
     )
     for recorded in record['entries']:
         assert 'threshold_status' not in recorded, (
@@ -422,12 +419,12 @@ def _entry(**overrides) -> dict:
 
 
 def test_the_shipped_table_still_loads_under_the_floor_rule() -> None:
-    # The record carries 0.90 / 0.65 / 0.20 today. The 0.20 is `tt-join-001`, an
+    # The record carries 0.90 / 0.80 / 0.20 today. The 0.20 is `tt-join-001`, an
     # escalate entry, which the floor does not bind -- so the whole table loads.
     table = load_reply_table()
     assert table.by_reply_id("tt-join-001").minimum_match_threshold == 0.20
     assert table.by_reply_id("tt-donate-001").minimum_match_threshold == 0.90
-    assert table.by_reply_id("tt-greet-001").minimum_match_threshold == 0.65
+    assert table.by_reply_id("tt-greet-001").minimum_match_threshold == 0.80
 
 
 def test_an_approved_entry_below_the_floor_is_refused() -> None:
@@ -519,7 +516,7 @@ def test_an_uncertain_decision_escalates_and_no_confidence_admits_it() -> None:
 
 
 def test_a_confidence_below_the_entries_own_threshold_is_not_eligible() -> None:
-    # AC 3: 0.60 is above a global 0.50 and below tt-doa-001's own 0.65, so the
+    # AC 3: 0.60 is above a global 0.50 and below tt-doa-001's own 0.80, so the
     # entry is not eligible and the Comment takes the unmatched path.
     result = _match(Decisions(confidences={"tt-doa-001": 0.60}))
     assert result.entry is None
@@ -527,10 +524,10 @@ def test_a_confidence_below_the_entries_own_threshold_is_not_eligible() -> None:
 
 
 def test_the_bar_is_per_entry_not_one_global_number() -> None:
-    # 0.70 clears tt-greet-001's 0.65 but not tt-donate-001's 0.90: the same
+    # 0.85 clears tt-greet-001's 0.80 but not tt-donate-001's 0.90: the same
     # number is eligible for one entry and below the bar for another.
-    assert _match(Decisions(confidences={"tt-greet-001": 0.70})).outcome is Outcome.CANNED_REPLY
-    below = _match(Decisions(confidences={"tt-donate-001": 0.70}))
+    assert _match(Decisions(confidences={"tt-greet-001": 0.85})).outcome is Outcome.CANNED_REPLY
+    below = _match(Decisions(confidences={"tt-donate-001": 0.85}))
     assert below.entry is None
     assert below.outcome is Outcome.BELOW_MINIMUM_MATCH_THRESHOLD
 
@@ -548,7 +545,7 @@ def test_two_eligible_entries_of_different_intents_conflict_and_the_higher_is_ne
 def test_two_eligible_entries_of_the_same_intent_take_the_higher() -> None:
     # D6: tt-doa-001 and tt-doa-002 are both DOA_BLESSING, so they are not a
     # conflict; the higher confidence is posted.
-    result = _match(Decisions(confidences={"tt-doa-001": 0.70, "tt-doa-002": 0.90}))
+    result = _match(Decisions(confidences={"tt-doa-001": 0.85, "tt-doa-002": 0.90}))
     assert result.entry is not None
     assert result.entry.reply_id == "tt-doa-002"
     assert result.outcome is Outcome.CANNED_REPLY

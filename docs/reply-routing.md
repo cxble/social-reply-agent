@@ -41,7 +41,7 @@ expose the entries that can move money.
 | tier | entries | threshold | default |
 |---|---|---|---|
 | Consequential | `DONATION_ENQUIRY`, `ZAKAT_SEDEKAH_ENQUIRY` | near-certainty | **0.90** |
-| Acknowledgement | `DOA_BLESSING`, `GREETING`, `PRAISE_ENCOURAGE`, `BENEFICIARY_THANKS`, `CONVERT_CONGRATS` | two to one | **0.65** |
+| Acknowledgement | `DOA_BLESSING`, `DOA_REQUEST`, `GREETING`, `PRAISE_ENCOURAGE`, `BENEFICIARY_THANKS`, `CONVERT_CONGRATS` | four to one | **0.80** |
 | Escalation gates | `HELP_REQUEST`, `JOIN_ENQUIRY` — no text; this is the **help threshold** | catch, not precise | **0.20** |
 
 **No entry may sit below 0.50.** Below that an entry is eligible on a reading the Router itself
@@ -51,8 +51,11 @@ unmatched and takes the unmatched path.
 
 **A threshold is not the whole gate.** ADR 0019's other bars — the Comment is not a No-reply
 Comment, the Router is not uncertain and not in conflict, and the identifier is confirmed at write
-time — are outside the sweep and cannot be tuned by moving a number. The defaults above are
-provisional until the sweep runs against Jev's own confidences rather than the stub's.
+time — are outside the sweep and cannot be tuned by moving a number. The numbers above have been
+measured against Jev's own confidences (`tools/run_router_sweep.py` + `tools/score_threshold.py`):
+the Acknowledgement tier was revised from 0.65 to 0.80 because it was the only tier posting false
+replies on silence, and the Consequential and Escalation-gates tiers were confirmed — the latter
+two on populations too thin to carry a rate (ADR 0019).
 
 ## Fallback
 

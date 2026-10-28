@@ -36,7 +36,7 @@
       "semugo allahpermudah segala usannya",
       "Semoga urusan pakcik ni dipermudahkan Allah Swt..."
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-doa-002",
@@ -60,7 +60,7 @@
       "good job. semuga dipermudahkan segala urusan Perubatan Dan kembali sihat",
       "terima kasih sahabat dengan perhatian sahabat thanks for your kindness semoga di permudahkan segala urusan dan..."
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-praise-001",
@@ -97,7 +97,7 @@
       "betul abang baik keren",
       "الحمدالله!! تروسكن اسها مورني"
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-greet-001",
@@ -138,7 +138,7 @@
       "ben bagi salam terbaik",
       "asalamualaikom syukur saudara dapat menarik untuk saudara kita bukan islam syukur dapat"
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-doareq-001",
@@ -167,7 +167,7 @@
       "doakan sy Kaya raya utk Bantu org lain🙏🏻",
       "Ninie Salim: ya Allah.. semoga saya pun dapat pergi juga nanti🤲🏻"
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-thanks-001",
@@ -201,7 +201,7 @@
       "macam saya dulu ayah tak boleh berjalan sekarang kenangan yang saya rindu terima kasih allah",
       "tweu_313 terima kasih ben memudahkan orang dlm susah"
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-convert-001",
@@ -223,7 +223,7 @@
       "Alhamdulillah... Semoga En Gary terus istiqamah dgn Islam hingga ke jannah.. Aamiinn, semoga mereka yang kembali ke agama fitrah terus mndpt bimbingan yg sewajarnya.. Aamiinn",
       "Alhamdulillah ugama yang fitrah 🥰🥰🥰🥰🥰🥰🥰"
     ],
-    "minimum_match_threshold": 0.65
+    "minimum_match_threshold": 0.80
   },
   {
     "reply_id": "tt-join-001",

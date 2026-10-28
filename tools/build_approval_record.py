@@ -52,13 +52,13 @@ PHRASINGS = {
     "tt-convert-001": (896, 912), "tt-donate-001": (913, 941), "tt-zakat-001": (913, 941),
 }
 META = {
-    "tt-doa-001": ("DOA_BLESSING", "ms", "approved", 0.65),
-    "tt-doa-002": ("DOA_BLESSING", "en", "approved", 0.65),
-    "tt-praise-001": ("PRAISE_ENCOURAGE", "ms", "approved", 0.65),
-    "tt-greet-001": ("GREETING", "ms", "approved", 0.65),
-    "tt-doareq-001": ("DOA_REQUEST", "ms", "approved", 0.65),
-    "tt-thanks-001": ("BENEFICIARY_THANKS", "ms", "approved", 0.65),
-    "tt-convert-001": ("CONVERT_CONGRATS", "ms", "approved", 0.65),
+    "tt-doa-001": ("DOA_BLESSING", "ms", "approved", 0.80),
+    "tt-doa-002": ("DOA_BLESSING", "en", "approved", 0.80),
+    "tt-praise-001": ("PRAISE_ENCOURAGE", "ms", "approved", 0.80),
+    "tt-greet-001": ("GREETING", "ms", "approved", 0.80),
+    "tt-doareq-001": ("DOA_REQUEST", "ms", "approved", 0.80),
+    "tt-thanks-001": ("BENEFICIARY_THANKS", "ms", "approved", 0.80),
+    "tt-convert-001": ("CONVERT_CONGRATS", "ms", "approved", 0.80),
     "tt-join-001": ("JOIN_ENQUIRY", "ms", "escalate", 0.2),
     "tt-donate-001": ("DONATION_ENQUIRY", "ms", "approved", 0.9),
     "tt-zakat-001": ("ZAKAT_SEDEKAH_ENQUIRY", "ms", "approved", 0.9),
@@ -207,15 +207,17 @@ payload = {
     "source_document": "docs/reply-table-tiktok.md",
     "intents_with_no_text": ["HELP_REQUEST", "JOIN_ENQUIRY"],
     "entries": record,
-    # The document states the numbers' uncertainty once, for the whole table (line
+    # The document states the numbers' status once, for the whole table (line
     # 961), so the record carries it once too rather than on each entry.
-    "threshold_status": "provisional",
+    "threshold_status": "measured",
     "threshold_status_doc_lines": [961],
     "threshold_status_note": (
-        "The document states the numbers' uncertainty once, for the whole table, not per entry: "
-        "'Those numbers are provisional, because they are claims about Jev's per-Comment "
-        "confidences and the Router does not exist in this repository.' There is therefore no "
-        "per-entry calibration status, and the production table carries none."
+        "The document states the numbers' status once, for the whole table, not per entry: "
+        "'The numbers have now been measured ... The Acknowledgement number was the only tier "
+        "posting false replies on silence, so it moved from 0.65 to 0.80 (ADR 0019); the "
+        "Consequential and Escalation-gates numbers are confirmed, but on scored populations in "
+        "single digits.' There is therefore no per-entry calibration status, and the production "
+        "table carries none."
     ),
 }
 OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
