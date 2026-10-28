@@ -13,6 +13,9 @@ Comment *text span* rather than a container; and the `cid` comes from the page's
 `comment/list` response rather than from any attribute.
 
 Nothing may be built on this without issue #16. It is a shape, not a reader.
+
+The operator procedure that produces a real page -- and the sidecar holding the `cid`s the
+DOM cannot carry -- is `docs/capture-a-recorded-page.md`.
 """
 
 from __future__ import annotations
