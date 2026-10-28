@@ -21,6 +21,7 @@ import pytest
 from agent.comment_pass import EscalationSink
 from agent.adapters.tiktok import TikTokRecordedPageAdapter
 from agent.record import CommentRecord, CommentStore, Outcome, ReplyStatus
+from agent.rotation import Phrasing
 from agent.write_path import (
     CommentWriter,
     Confirmation,
@@ -134,6 +135,11 @@ def _held(
     return HeldComment(platform="tiktok", post=post, identity=identity, text=text)
 
 
+def _phrasing(text: str, *, reply_id: str = "tt-greet-001") -> Phrasing:
+    """A Phrasing the write path may post (D7). The deck is not wired in here."""
+    return Phrasing(set_id=reply_id, reply_id=reply_id, text=text)
+
+
 def _escalations(tmp_path) -> list[dict]:
     path = tmp_path / "acct.escalations.jsonl"
     if not path.exists():
@@ -162,7 +168,7 @@ def test_the_held_comment_is_read_off_a_real_recorded_page_with_no_session(
         HeldComment(
             platform="tiktok", post="p-1", identity=mid.identity, text=mid.text
         ),
-        "Salam, terima kasih!",
+        _phrasing("Salam, terima kasih!"),
     )
 
     assert result.wrote is True
@@ -173,7 +179,7 @@ def test_it_re_finds_submits_and_reads_back_the_confirmation(store, tmp_path):
     page = RecordedPage([RenderedComment(identity="c-1", text="please help")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "Salam, terima kasih!")
+    result = writer.write_reply(_held(), _phrasing("Salam, terima kasih!"))
 
     assert result.wrote is True
     assert result.escalated is False
@@ -201,7 +207,9 @@ def test_an_identical_text_under_a_different_identifier_is_never_written(
     page = RecordedPage([RenderedComment(identity="c-OTHER", text="please help")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(identity="c-1", text="please help"), "hi")
+    result = writer.write_reply(
+        _held(identity="c-1", text="please help"), _phrasing("hi")
+    )
 
     assert result.wrote is False
     assert result.escalated is True
@@ -219,7 +227,7 @@ def test_an_unreadable_identifier_is_not_written_and_the_failure_names_why(
     page = RecordedPage([RenderedComment(identity=None, text="please help")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.wrote is False
     assert result.escalated is True
@@ -256,7 +264,7 @@ def test_a_comment_edited_after_it_was_read_is_not_written_a_second_time(
     page = RecordedPage([RenderedComment(identity="c-1", text="edited words")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(text="edited words"), "hi again")
+    result = writer.write_reply(_held(text="edited words"), _phrasing("hi again"))
 
     assert result.wrote is False
     assert result.submitted is False
@@ -282,7 +290,7 @@ def test_a_submitted_write_that_cannot_be_confirmed_is_not_a_success(
     )
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.submitted is True
     assert result.wrote is False
@@ -307,7 +315,7 @@ def test_a_submit_that_raises_is_an_unknown_outcome_not_a_lost_write(store, tmp_
     )
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.wrote is False
     assert result.submitted is True
@@ -321,9 +329,53 @@ def test_a_submit_that_raises_is_an_unknown_outcome_not_a_lost_write(store, tmp_
 
     # And the record is what stops the retry: a second run finds the Comment
     # already handled and does not submit again.
-    again = writer.write_reply(_held(), "hi")
+    again = writer.write_reply(_held(), _phrasing("hi"))
     assert again.outcome is None
     assert page.calls.count("submit_reply") == 1
+
+
+def test_an_unknown_outcome_escalation_names_the_reply_it_may_have_posted(
+    store, tmp_path
+):
+    # A post-submit refusal is the entry a human reconciles a possible
+    # double-post from (ADR 0019), and it cannot be reconciled without knowing
+    # which words may already be on the page. The writer holds a Phrasing, so the
+    # sink has to say which one -- otherwise unpacking it to `.text` at the
+    # submit and throwing the rest away leaves the one case that needs it blind.
+    page = RecordedPage(
+        [RenderedComment(identity="c-1", text="please help")], raises_on_submit=True
+    )
+    writer = _writer(store, tmp_path, page)
+
+    result = writer.write_reply(
+        _held(), Phrasing(set_id="greeting-set", reply_id="tt-greet-001", text="Salam!")
+    )
+
+    assert result.outcome is Outcome.UNKNOWN_OUTCOME
+    (entry,) = _escalations(tmp_path)
+    assert "may have posted" in entry["detail"]
+    # The words, the entry they came from, and the set they rotated in: the entry
+    # names what to look for on the page, and the set says which deck advanced.
+    assert "Salam!" in entry["detail"]
+    assert "tt-greet-001" in entry["detail"]
+    assert "greeting-set" in entry["detail"]
+
+
+def test_a_refusal_before_the_submit_names_no_reply(store, tmp_path):
+    # The other side of the same asymmetry: nothing was submitted, so nothing can
+    # have posted, and the sink must not suggest otherwise. A marker that hedges
+    # where there is no doubt is a marker a human learns to ignore.
+    page = RecordedPage([RenderedComment(identity=None, text="please help")])
+    writer = _writer(store, tmp_path, page)
+
+    result = writer.write_reply(
+        _held(), Phrasing(set_id="greeting-set", reply_id="tt-greet-001", text="Salam!")
+    )
+
+    assert result.submitted is False
+    (entry,) = _escalations(tmp_path)
+    assert "may have posted" not in entry["detail"]
+    assert "Salam!" not in entry["detail"]
 
 
 def test_an_unreadable_identifier_is_not_wrapped_in_an_unknown_outcome(store, tmp_path):
@@ -339,7 +391,7 @@ def test_an_unreadable_identifier_is_not_wrapped_in_an_unknown_outcome(store, tm
     writer = _writer(store, tmp_path, page)
 
     with pytest.raises(ValueError):
-        writer.write_reply(_held(), "hi")
+        writer.write_reply(_held(), _phrasing("hi"))
 
     assert page.calls == []
     assert _escalations(tmp_path) == []
@@ -362,7 +414,7 @@ def test_a_confirmation_attributed_to_another_account_is_not_a_success(
     )
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.wrote is False
     assert result.outcome is Outcome.UNKNOWN_OUTCOME
@@ -378,7 +430,7 @@ def test_a_confirmation_that_moved_off_the_comment_is_not_a_success(store, tmp_p
     )
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.submitted is True
     assert result.wrote is False
@@ -417,7 +469,7 @@ def test_a_comment_the_pass_already_decided_is_still_written(store, tmp_path):
     page = RecordedPage([RenderedComment(identity="c-1", text="please help")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "Salam, terima kasih!")
+    result = writer.write_reply(_held(), _phrasing("Salam, terima kasih!"))
 
     assert result.wrote is True
     assert page.submitted == [("c-1", "Salam, terima kasih!")]
@@ -440,7 +492,7 @@ def test_a_reply_already_recorded_is_never_posted_over(store, tmp_path):
     page = RecordedPage([RenderedComment(identity="c-1", text="please help")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.wrote is False
     assert result.submitted is False
@@ -457,7 +509,7 @@ def test_an_escalation_for_a_decided_comment_still_reaches_the_sink(store, tmp_p
     page = RecordedPage([RenderedComment(identity=None, text="please help")])
     writer = _writer(store, tmp_path, page)
 
-    result = writer.write_reply(_held(), "hi")
+    result = writer.write_reply(_held(), _phrasing("hi"))
 
     assert result.wrote is False
     assert result.escalated is True
