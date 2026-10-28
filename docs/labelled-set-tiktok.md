@@ -161,33 +161,67 @@ seven carry an explicit thanks or praise as well, which is the rule in § Method
   sick person is semantically a `DOA_BLESSING`, and every entry in the table is Malay-only. The
   labels record the intent and the note records the language; no entry can serve them.
 
-## The harness, and why no threshold is chosen
+## The harness, and the numbers it measured
 
-`tools/score_threshold.py` sweeps `minimum_match_threshold` over a predictions file of
-`{nid, intent, confidence}` and reports **coverage**, **precision**, and — separately — **false
-replies on silence**: Replies posted to a Comment whose correct handling is no Canned reply at all,
-which under ADR 0018 is **both** `NO_REPLY` and `OUT_OF_SCOPE`. That third number is reported apart
-from precision because averaging a public non-sequitur into a precision figure hides exactly the
-failure the threshold exists to prevent. The harness also stopped counting `OUT_OF_SCOPE` among the
-Comments that should get a Reply: under ADR 0018 it must not receive one, so scoring it as a
-coverage miss and a precision hit at once measured nothing.
+`tools/run_router_sweep.py` drives Jev over the labelled set and records one decision per Comment:
+which of `choice`/`declined`/`uncertain`/`failure` the call produced, plus a Variant hit, which
+makes no Router call at all. `tools/score_threshold.py` then reads the labelled set and that
+decisions file and replays the recorded confidences through `agent.matching.Matcher` — it decides
+nothing itself. It reports **coverage**, **precision**, and — separately — **false replies on
+silence**: Replies posted to a Comment whose correct handling is no Canned reply at all, which
+under ADR 0018 is **both** `NO_REPLY` and `OUT_OF_SCOPE`. That third number is reported apart from
+precision because averaging a public non-sequitur into a precision figure hides exactly the failure
+the threshold exists to prevent. `OUT_OF_SCOPE` is not counted among the Comments that should get a
+Reply: under ADR 0018 it must not receive one.
 
-`--stub` generates synthetic predictions with a deliberate 20% error rate, so the format, the curve
-and the report are all exercised **before the Router exists**. Per `prove-the-path-you-havent-run`,
-a mode switch is only a config change once the code behind it has actually run. The stub's output
-is labelled SYNTHETIC on every run; its numbers describe the harness, not Jev.
+`--stub` generates synthetic decisions with a deliberate error rate, so the format, the curve and
+the report are all exercised **before the Router exists**. Per `prove-the-path-you-havent-run`, a
+mode switch is only a config change once the code behind it has actually run. The stub's output is
+labelled SYNTHETIC on every run; its numbers describe the harness, not Jev.
+
+### What the run measured
+
+The real sweep ran over the 401 distinct Comments (401 calls, ~$0.0093). **50 Comments are answered
+by a declared Variant with no Router call** (91 rows); they are reported separately and excluded
+from the threshold figures. The remaining **351 Comments (678 rows)** carry a recorded decision.
+Aggregate figures, each given twice — distinct Comments and corpus rows:
+
+| figure | distinct | rows |
+|---|---|---|
+| Comments that should get a Canned reply | 194 | 195 |
+| …that got one (**coverage**) | 98 (**0.505**) | 99 (**0.508**) |
+| …that were posted correctly (**precision**) | 93 of 98 (**0.949**) | 94 of 99 (**0.949**) |
+| **false replies on silence** (`NO_REPLY` or `OUT_OF_SCOPE`) | **48** | **77** |
+| …`NO_REPLY` | 44 | 73 |
+| …`OUT_OF_SCOPE` | 4 | 4 |
+| posts against an Escalation gate (`HELP_REQUEST`/`JOIN_ENQUIRY`) | 0 | 0 |
+
+Every false reply on silence came from the **Acknowledgement** tier; the Consequential and
+Escalation-gates tiers posted none. `ZAKAT_SEDEKAH_ENQUIRY` was measured at zero in this set and
+`DONATION_ENQUIRY` at one scored Comment (the other is a Variant hit), so the **Consequential tier
+is too thin to validate a number** (1 distinct scored Comment) — as is the **Escalation gates
+tier** (0 distinct; both `JOIN_ENQUIRY` Comments are Variant hits). ADR 0019 records the verdicts.
+
+**These figures are the shipped configuration and are reproduced by
+`python3 tools/score_threshold.py` against `data/candidates/router.decisions.jsonl`.** Jev is not
+deterministic across calls (ADR 0019 records the variance), so a fresh sweep will differ in the
+last digits. The revision rests on the *direction*, not the exact number: at the pre-revision
+**0.65** the same artifact yields coverage **0.680** (132/194 distinct; 133/195 rows), precision
+**0.894** (118/132 distinct; 119/133 rows) and **75 false replies on silence (112 rows)** — 69
+`NO_REPLY` (106 rows) and 6 `OUT_OF_SCOPE` (6 rows) — where the shipped **0.80** yields the table
+above.
 
 **No threshold is picked here — the rule it is picked by is ADR 0019.** The sweep reports the curve;
 choosing a point on it is a decision about which error is worse, and that decision is now recorded
 rather than left open. ADR 0019 settles the *rule*: the threshold is per entry, tiered by what a
-wrong Reply costs — **0.90** where the entry moves money, **0.65** for the acknowledgement classes,
+wrong Reply costs — **0.90** where the entry moves money, **0.80** for the acknowledgement classes,
 **0.20** as the Escalation gate — with a **0.50 floor** no entry may sit below, and below its
 threshold a Comment takes the unmatched path rather than being answered more cheaply. The measured
 61.1% `NO_REPLY` is what argues for the floor, and the 0.3% size of the money-moving Intents is what
-makes the 0.90 tier nearly free. Those numbers are **provisional defaults**: they are claims about
-Jev's confidences and the Router does not exist in this repository, so the sweep's current output is
-the stub's and is marked SYNTHETIC on every run. What this set supplies is the ground truth they
-will be re-derived against.
+makes the 0.90 tier nearly free. The Acknowledgement number was **revised from 0.65 to 0.80** on the
+measurement — it was the only tier posting false replies on silence (**75, 112 rows** at 0.65,
+**48, 77 rows** at 0.80) — and no threshold in the tested range drives those to zero. What this set
+supplies is the ground truth those numbers were re-derived against.
 
 ## Limits, stated plainly
 
@@ -200,10 +234,11 @@ will be re-derived against.
   `HELP_REQUEST` are counted in single digits and cannot carry a rate.
 - **The corpus is truncated on the large Posts and missing the last one or two.** The base rates
   describe what was read, not all of TikTok.
-- **`minimum_match_threshold` still cannot be computed**, because calibration needs Jev's
-  per-Comment confidences and the Router does not exist in this repository. ADR 0019 fixed the rule
-  and gave provisional numbers; what exists here is the ground truth those numbers will be
-  re-derived against.
+- **`minimum_match_threshold` is now measured, not derived from this document.** The Router exists
+  (`agent/router.py`) and the sweep has run (`tools/run_router_sweep.py` + `tools/score_threshold.py`);
+  ADR 0019 records the tier verdicts and the figures. What this document supplies is the ground
+  truth those numbers were re-derived against, and the Limits above — the 401-of-839 sample, the
+  single-digit classes — are why two tiers remain too thin to validate.
 
 ## Reproduce
 
@@ -215,6 +250,8 @@ python3 tools/apply_labels.py boundary data/candidates/labels/boundary.tsv
 python3 tools/apply_labels.py random   data/candidates/labels/random.tsv
 python3 tools/apply_labels.py random --report
 python3 tools/score_threshold.py --stub
+python3 tools/run_router_sweep.py          # network, opt-in: OPENROUTER_API_KEY
+python3 tools/score_threshold.py           # replay the recorded decisions
 ```
 
 The draw is seeded (`20261021`), so the same candidates come back. The labelling is not reproducible

@@ -134,9 +134,10 @@ def test_approval_is_what_status_carries_and_calibration_is_not_per_entry(
         assert 'threshold_status' not in recorded, (
             f'{reply_id}: calibration recorded per entry as well as for the table'
         )
-    assert record['threshold_status'] == 'provisional', (
-        'the record no longer carries the document\'s statement that the numbers are '
-        'provisional; if the Router now exists, fix this deliberately'
+    assert record['threshold_status'] == 'measured', (
+        'the record no longer carries the document\'s statement about the numbers\' '
+        'status; the measurement (ADR 0019) revised the Acknowledgement number, so the '
+        'record now says the numbers were measured'
     )
 
 

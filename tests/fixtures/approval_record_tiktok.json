@@ -20,7 +20,7 @@
       "matching_criteria_doc_lines": [
         143
       ],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Aamiin. Semoga Allah permudahkan segala urusan tuan/puan.",
@@ -243,7 +243,7 @@
       "matching_criteria": "a prayer or blessing written in English or mixed English-Malay, with no request in it",
       "matching_criteria_source": "derived",
       "matching_criteria_doc_lines": [],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Aamiin. Thank you for your doa.",
@@ -363,7 +363,7 @@
       "matching_criteria_doc_lines": [
         218
       ],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Terima kasih. Semoga Allah membalas budi baik tuan/puan.",
@@ -559,7 +559,7 @@
       "matching_criteria_doc_lines": [
         242
       ],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Waalaikumussalam warahmatullahi wabarakatuh.",
@@ -785,7 +785,7 @@
       "matching_criteria_doc_lines": [
         280
       ],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Aamiin, semoga Allah makbulkan hajat tuan/puan.",
@@ -933,7 +933,7 @@
       "matching_criteria_doc_lines": [
         327
       ],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Alhamdulillah. Terima kasih kembali.",
@@ -1106,7 +1106,7 @@
       "matching_criteria": "congratulating or blessing someone on embracing Islam; eligible only on a conversion Post",
       "matching_criteria_source": "derived",
       "matching_criteria_doc_lines": [],
-      "minimum_match_threshold": 0.65,
+      "minimum_match_threshold": 0.8,
       "approved_phrasings": [
         {
           "text": "Alhamdulillah. Semoga Allah kekalkan tuan/puan dalam hidayah-Nya.",
@@ -1423,9 +1423,9 @@
       "sign_off_is_reference": true
     }
   ],
-  "threshold_status": "provisional",
+  "threshold_status": "measured",
   "threshold_status_doc_lines": [
     961
   ],
-  "threshold_status_note": "The document states the numbers' uncertainty once, for the whole table, not per entry: 'Those numbers are provisional, because they are claims about Jev's per-Comment confidences and the Router does not exist in this repository.' There is therefore no per-entry calibration status, and the production table carries none."
+  "threshold_status_note": "The document states the numbers' status once, for the whole table, not per entry: 'The numbers have now been measured ... The Acknowledgement number was the only tier posting false replies on silence, so it moved from 0.65 to 0.80 (ADR 0019); the Consequential and Escalation-gates numbers are confirmed, but on scored populations in single digits.' There is therefore no per-entry calibration status, and the production table carries none."
 }

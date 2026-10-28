@@ -709,7 +709,7 @@ this section exists to prevent.
 
 **The entry thresholds are now set and tiered by what a wrong Reply costs — ADR 0019.** The rule,
 and the defaults it produces, are: **0.90** for the two entries that publish a bank account
-(`DONATION_ENQUIRY`, `ZAKAT_SEDEKAH_ENQUIRY`), **0.65** for the acknowledgement classes, **0.20**
+(`DONATION_ENQUIRY`, `ZAKAT_SEDEKAH_ENQUIRY`), **0.80** for the acknowledgement classes, **0.20**
 for the help threshold, and a **0.50 floor** no entry may sit below. The heights are justified by
 the measured size of each class rather than by caution: the money-moving Intents are **0.3% of
 rows**, so demanding near-certainty there costs almost no coverage, while the acknowledgement tier
@@ -956,12 +956,13 @@ claim either way.
    `UNCERTAIN` rows went) and comments not in Malay at all. `tools/score_threshold.py` sweeps
    `minimum_match_threshold` against it and reports false replies on silence separately from
    precision. **The threshold itself is now decided — ADR 0019** — but as a *rule* rather than a
-   calibrated number: per entry, tiered by what a wrong Reply costs (0.90 / 0.65 / 0.20) with a
+   calibrated number: per entry, tiered by what a wrong Reply costs (0.90 / 0.80 / 0.20) with a
    0.50 floor, below its threshold a Comment taking the unmatched path rather than a cheaper
-   answer. Those numbers are provisional, because they are claims about Jev's per-Comment
-   confidences and the Router does not exist in this repository; the sweep's current output comes
-   from `--stub` and is marked SYNTHETIC on every run. The labelled set is what they will be
-   re-derived against.
+   answer. The numbers have now been measured: `tools/run_router_sweep.py` drove Jev over the
+   labelled set and `tools/score_threshold.py` replayed it. The Acknowledgement number was the
+   only tier posting false replies on silence, so it moved from 0.65 to 0.80 (ADR 0019); the
+   Consequential and Escalation-gates numbers are confirmed, but on scored populations in single
+   digits — too thin to carry a rate.
    - **The no-reply policy is settled — ADR 0018.** What this table called `OUT_OF_SCOPE` at 36%
      was two classes: **`NO_REPLY`**, correctly silent and **61.1% of rows**, and `OUT_OF_SCOPE`
      proper, a genuine coverage gap at **1.8%**. The label was renamed from `TAIL` because the
