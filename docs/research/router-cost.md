@@ -28,7 +28,7 @@ Billing basis is proved, not inferred, by OpenRouter's own example response for 
 
 ## Cost at volume
 
-Real classification calls, measured by OpenRouter's own cookbooks (`classify-reddit-comments-with-jev`: *"$0.00057 for the captured run… 27 comments, about $0.021 per 1,000"*; `jev-classification`: 609.9 input tokens/item), run **~500–610 input tokens per Comment**. Take **$0.0211 per 1,000 Comments**.
+Real classification calls, measured by OpenRouter's own cookbooks (`classify-reddit-comments-with-jev`: *"$0.00057 for the captured run… 27 comments, about $0.021 per 1,000"*; `jev-classification`: 609.9 input tokens/item), run **~500–610 input tokens per Comment**. Take **$0.0211 per 1,000 Comments** — which is what ~500 input tokens costs, and input tokens are the whole bill (see the correction at the foot of this note). Our own calls land on both sides of it: **$0.0156/1,000** for a narrow option set (371 tokens) and **$0.0265/1,000** for the full shipped table (632 tokens).
 
 | Comments/day | Calls/month | Jev cost/month | +5.5% OpenRouter credit fee |
 |---|---|---|---|
@@ -104,7 +104,30 @@ Switching model is a `model` field change plus re-tuning thresholds: *"Probabili
 - Whether `respan/span-01-lite` carries `:free` request limits, since it lacks the `:free` suffix.
 - TypeSafe enterprise/volume pricing — unpublished, and `console.typesafe.ai` is behind a Cloudflare challenge, so "no free tier" rests on public docs rather than account pages.
 - No published billing increment or per-request minimum was found, which is not the same as proving none exists.
-- **No model calls were executed.** Prices and the `decisions` modality were verified via the API; Jev's request/response contract via the OpenAPI spec.
+
+## Corrected 2026-10-28, when ticket #8 made real calls
+
+- **The "No model calls were executed" line that stood here is no longer true.** Ticket #8's
+  `agent/router.py` made live calls against `typesafe/jev-1.14`, and the billing basis above is
+  now confirmed rather than inferred: `usage.cost == input_tokens × 4.2e-08` **exactly**, in all
+  three observed calls (371 → 1.5582e-05, 476 → 1.9992e-05, 632 → 2.6544e-05). Output tokens are
+  free, as the pricing table says.
+- **So the cost per call is the size of the option set**, not a flat rate: every criterion
+  offered is tokens on the wire. The relevant figure today is the **full shipped table — 11
+  criteria, 632 input tokens, $0.0265 per 1,000 Comments**, which is *above* the note's $0.0211
+  rather than below it. Narrowing options by language (routing step 3, not yet built) would move
+  it back down toward $0.0156. Cost is not a constraint at any of these figures; the note's
+  table simply should not be read as conservative in every direction.
+- **The endpoint is not under `/api/v1`.** This note cited `POST /api/alpha/decisions`
+  correctly, but the OpenAPI spec's own `servers` (`https://openrouter.ai/api/v1`) composes to a
+  path that **404s**, as do `/api/v1/decisions` and `/api/v1/api/alpha/decisions`. Only
+  `https://openrouter.ai/api/alpha/decisions` answers 200. `agent/router.py` pins that URL and a
+  test fails if it regresses to an `/api/v1` spelling.
+- **A byte-identical request returned a byte-identical answer, twice** — the measurement AC 5
+  rests on. Jev's request/response contract is now verified by observation, not only by the spec.
+  Observed answers also vary in how many criteria they name: one call returned only the chosen id
+  and the sentinel, another returned all eleven at `0` except the chosen one. Both are readable
+  under the same rule (only ids the Router was offered are passed on).
 
 ## Sources
 
